@@ -32,5 +32,6 @@ markdown_extensions:
 pages:
 - Welcome: index.md
 - API Docs:
+  - latest: api/latest.md
 - License: about/license.md
 
