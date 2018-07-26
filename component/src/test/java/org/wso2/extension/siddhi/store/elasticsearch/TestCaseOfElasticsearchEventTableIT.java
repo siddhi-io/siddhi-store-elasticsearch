@@ -398,5 +398,84 @@ public class TestCaseOfElasticsearchEventTableIT {
         AssertJUnit.assertEquals("Event arrived", true, eventArrived);
         siddhiAppRuntime.shutdown();
     }
+
+    @Test(testName = "elasticsearchRecordsContain", description = "Testing Records contain.")
+    public void elasticsearchRecordsContain() throws InterruptedException {
+        log.info("elasticsearchRecordsContain");
+        SiddhiManager siddhiManager = new SiddhiManager();
+        String streams =
+                "define stream StockStream (symbol string, price float, volume long); \n" +
+                        "define stream UpdateStream (symbol string, price float, volume long); \n" +
+                        "define stream TestStream(symbol string); \n" +
+                        "\n" +
+                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "index.name='stock_index')\n" +
+                        "@primaryKey('symbol') \n" +
+                        "define table stock_table(symbol string, price float, volume long);";
+        String query = "" +
+                "@info(name = 'query1')\n" +
+                "from StockStream \n" +
+                "select symbol, price, volume \n" +
+                "insert into stock_table;";
+        String query2 = "" +
+                "@info(name = 'query2')\n" +
+                "from UpdateStream " +
+                "select symbol, price, volume\n" +
+                "delete stock_table on stock_table.symbol == symbol;";
+        String query3 = "" +
+                "@info(name = 'query3')\n" +
+                "from TestStream[stock_table.symbol == symbol in stock_table]\n" +
+                "select a.symbol \n" +
+                "insert into AlertStream;";
+
+        log.info(streams + query);
+
+        SiddhiAppRuntime siddhiAppRuntime = siddhiManager.createSiddhiAppRuntime(streams + query + query2 + query3);
+        InputHandler insertStockStream = siddhiAppRuntime.getInputHandler("StockStream");
+        InputHandler insertDeleteStream = siddhiAppRuntime.getInputHandler("UpdateStream");
+        InputHandler insertTestStream = siddhiAppRuntime.getInputHandler("TestStream");
+        siddhiAppRuntime.addCallback("query3", new QueryCallback() {
+            @Override
+            public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
+                EventPrinter.print(timeStamp, inEvents, removeEvents);
+                if (inEvents != null) {
+                    for (Event event : inEvents) {
+                        inEventCount++;
+                        switch (inEventCount) {
+                            case 1:
+                                Assert.assertEquals(event.getData(), new Object[]{"WSO2"});
+                                break;
+                            case 2:
+                                Assert.assertEquals(event.getData(), new Object[]{"MSFT"});
+                                break;
+                            default:
+                                Assert.assertSame(2, inEventCount);
+                        }
+                    }
+                    eventArrived = true;
+                }
+                if (removeEvents != null) {
+                    removeEventCount = removeEventCount + removeEvents.length;
+                }
+                eventArrived = true;
+            }
+        });
+        siddhiAppRuntime.start();
+
+        insertStockStream.send(new Object[]{"WSO2", 55.6F, 1005L});
+        insertStockStream.send(new Object[]{"IBM", 75.6F, 1005L});
+        insertStockStream.send(new Object[]{"MSFT", 57.6F, 1005L});
+        Thread.sleep(1000);
+        insertDeleteStream.send(new Object[]{"IBM", 75.6F, 1005L});
+        Thread.sleep(1000);
+        insertTestStream.send(new Object[]{"WSO2"});
+        insertTestStream.send(new Object[]{"IBM"});
+        insertTestStream.send(new Object[]{"MSFT"});
+        Thread.sleep(1000);
+        AssertJUnit.assertEquals("Number of success events", 2, inEventCount);
+        AssertJUnit.assertEquals("Number of remove events", 0, removeEventCount);
+        AssertJUnit.assertEquals("Event arrived", true, eventArrived);
+        siddhiAppRuntime.shutdown();
+    }
 }
 

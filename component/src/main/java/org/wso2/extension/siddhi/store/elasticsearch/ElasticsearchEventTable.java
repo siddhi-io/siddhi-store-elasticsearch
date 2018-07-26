@@ -396,7 +396,14 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     @Override
     protected boolean contains(Map<String, Object> containsConditionParameterMap,
                                CompiledCondition compiledCondition) throws ConnectionUnavailableException {
-        return false;
+        try {
+            ElasticsearchRecordIterator elasticsearchRecordIterator = findRecords(containsConditionParameterMap,
+                    compiledCondition);
+            return elasticsearchRecordIterator.hasNext();
+        } catch (ElasticsearchServiceException e) {
+            throw new ElasticsearchEventTableException("Error while checking content mapping for '" +
+                    "' table id: " + tableDefinition.getId(), e);
+        }
     }
 
     /**
