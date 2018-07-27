@@ -1,0 +1,107 @@
+# API Docs - v1.0.0-SNAPSHOT
+
+## Store
+
+### elasticsearch *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#store">(Store)</a>*
+
+<p style="word-wrap: break-word">Elasticsearch store implementation uses Elasticsearch indexing document for underlying data storage. The events are converted to Elasticsearch index documents when the events are inserted to elasticsearch store. Elasticsearch indexing documents are converted to Events when the documents are read from Elasticsearch indexes. Internally store connected with Elasticsearch server with The Elasticsearch Java High Level REST Client library.</p>
+
+<span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
+```
+@Store(type="elasticsearch", host="<STRING>", port="<INT>", scheme="<STRING>", username="<STRING>", password="<STRING>", index.name="<STRING>", index.alias="<STRING>", index.number.of.shards="<INT>", index.number.of.replicas="<INT>")
+@PrimaryKey("PRIMARY_KEY")
+@Index("INDEX")
+```
+
+<span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
+<table>
+    <tr>
+        <th>Name</th>
+        <th style="min-width: 20em">Description</th>
+        <th>Default Value</th>
+        <th>Possible Data Types</th>
+        <th>Optional</th>
+        <th>Dynamic</th>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">host</td>
+        <td style="vertical-align: top; word-wrap: break-word">The host of the Elasticsearch server.</td>
+        <td style="vertical-align: top">localhost</td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">port</td>
+        <td style="vertical-align: top; word-wrap: break-word">The port of the Elasticsearch server.</td>
+        <td style="vertical-align: top">9200</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">scheme</td>
+        <td style="vertical-align: top; word-wrap: break-word">The scheme type of the Elasticsearch server connection.</td>
+        <td style="vertical-align: top">http</td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">username</td>
+        <td style="vertical-align: top; word-wrap: break-word">The user name for the Elasticsearch server connection.</td>
+        <td style="vertical-align: top">elastic</td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">password</td>
+        <td style="vertical-align: top; word-wrap: break-word">The password for the Elasticsearch server connection.</td>
+        <td style="vertical-align: top">changeme</td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">index.name</td>
+        <td style="vertical-align: top; word-wrap: break-word">The name of the Elasticsearch index.</td>
+        <td style="vertical-align: top">The table name defined in the Siddhi App query.</td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">index.alias</td>
+        <td style="vertical-align: top; word-wrap: break-word">The alias of the Elasticsearch index.</td>
+        <td style="vertical-align: top">null</td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">index.number.of.shards</td>
+        <td style="vertical-align: top; word-wrap: break-word">The number of shards for the index in Elasticsearch server.</td>
+        <td style="vertical-align: top">3</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">index.number.of.replicas</td>
+        <td style="vertical-align: top; word-wrap: break-word">The number of replicas for the index in Elasticsearch server.</td>
+        <td style="vertical-align: top">2</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+</table>
+
+<span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
+<span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
+```
+@Store(type="elasticsearch", host="localhost", username="elastic", password="changeme" , index.name="MyStockTable",field.length="symbol:100")
+@PrimaryKey("symbol")define table StockTable (symbol string, price float, volume long);
+```
+<p style="word-wrap: break-word">The above example creates an index named <code>MyStockTable</code> on the Elasticsearch server if it does not already exist (with 3 attributes named <code>symbol</code>, <code>price</code>, and <code>volume</code> of the types types <code>string</code>, <code>float</code> and <code>long</code> respectively). The connection is made as specified by the parameters configured for the '@Store' annotation. The <code>symbol</code> attribute is considered a unique field, and a Elasticsearch index document id is generated for it.</p>
+
