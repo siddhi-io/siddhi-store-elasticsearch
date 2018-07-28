@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.extension.siddhi.store.elasticsearch;
+package org.wso2.extension.siddhi.store.elasticsearch.test;
 
 import org.apache.log4j.Logger;
 import org.testng.Assert;
@@ -24,7 +24,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchUtils;
+import org.wso2.extension.siddhi.store.elasticsearch.test.utils.ElasticsearchUtils;
 import org.wso2.siddhi.core.SiddhiAppRuntime;
 import org.wso2.siddhi.core.SiddhiManager;
 import org.wso2.siddhi.core.event.Event;
