@@ -145,10 +145,9 @@
         </dependencies>
     </dependencyManagement>
     <scm>
-        <connection>scm:git:https://github.com/wso2-extensions/siddhi-eventtable-elasticsearch.git</connection>
-        <url>https://github.com/wso2-extensions/siddhi-eventtable-elasticsearch.git</url>
-        <developerConnection>scm:git:https://github.com/wso2-extensions/siddhi-eventtable-elasticsearch.git
-        </developerConnection>
+        <connection>scm:git:https://github.com/wso2-extensions/siddhi-store-elasticsearch.git</connection>
+        <url>https://github.com/wso2-extensions/siddhi-store-elasticsearch.git</url>
+        <developerConnection>scm:git:https://github.com/wso2-extensions/siddhi-store-elasticsearch.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <build>
