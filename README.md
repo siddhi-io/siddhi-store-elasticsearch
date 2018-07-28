@@ -1,4 +1,4 @@
-﻿Siddhi-store-elasticsearch
+?Siddhi-store-elasticsearch
 ======================================
 
 The **siddhi-store-elasticsearch extension** is an extension for siddhi Elasticsearch event table implementation. This extension can be used to persist events to a
@@ -12,7 +12,7 @@ Find some useful links below:
 
 ## Latest API Docs 
 
-Latest API Docs is <a target="_blank" href="https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/latest">latest</a>.
+Latest API Docs is <a target="_blank" href="https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.0">1.0.0</a>.
 
 ## Prerequisites
  - Elasticsearch can be downloaded directly from href="https://www.elastic.co/downloads/elasticsearch" in zip, tar.gz, deb, or rpm packages. 
@@ -60,12 +60,7 @@ Latest API Docs is <a target="_blank" href="https://wso2-extensions.github.io/si
 
 ## Features
 
-* <a target="_blank" href="https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/latest/#elasticsearch-store">elasticsearch</a> *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#store">(Store)</a>*<br><div style="padding-left: 1em;"><p>The above example creates an index named MyStockTable on the Elasticsearch 
-                                                                                                                                                                                                                                                                                       server if it does not already exist (with 3 attributes named `symbol`, `price`,
-                                                                                                                                                                                                                                                                                       and `volume` of the types types `string`, `float` and `long` respectively). 
-                                                                                                                                                                                                                                                                                       The connection is made as specified by the parameters configured for the '@Store' 
-                                                                                                                                                                                                                                                                                       annotation. The `symbol` attribute is considered a unique field, and a Elasticsearch
-                                                                                                                                                                                                                                                                                       index document id is generated for it.</p></div>
+* <a target="_blank" href="https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.0/#elasticsearch-store">elasticsearch</a> *<a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#store">(Store)</a>*<br><div style="padding-left: 1em;"><p>Elasticsearch store implementation uses Elasticsearch indexing document for underlying data storage. The events are converted to Elasticsearch index documents when the events are inserted to elasticsearch store. Elasticsearch indexing documents are converted to Events when the documents are read from Elasticsearch indexes. Internally store connected with Elasticsearch server with The Elasticsearch Java High Level REST Client library.</p></div>
 
 ## How to Contribute
  
