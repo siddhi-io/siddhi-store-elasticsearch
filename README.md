@@ -1,4 +1,4 @@
-?Siddhi-store-elasticsearch
+Siddhi-store-elasticsearch
 ======================================
 
 The **siddhi-store-elasticsearch extension** is an extension for siddhi Elasticsearch event table implementation. This extension can be used to persist events to a
