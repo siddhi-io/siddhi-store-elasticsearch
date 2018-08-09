@@ -189,7 +189,7 @@
         </pluginManagement>
     </build>
     <properties>
-        <siddhi.version>4.1.55</siddhi.version>
+        <siddhi.version>4.2.0</siddhi.version>
         <testng.version>6.11</testng.version>
         <elasticsearch.version>6.2.4</elasticsearch.version>
         <joda.time.version>2.9.9</joda.time.version>
