@@ -100,9 +100,9 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
         namespace = "store",
         description = "Elasticsearch store implementation uses Elasticsearch indexing document for underlying " +
                 "data storage. The events are converted to Elasticsearch index documents when the events are " +
-                "inserted to elasticsearch store. Elasticsearch indexing documents are converted to Events when " +
-                "the documents are read from Elasticsearch indexes. Internally store connected with Elasticsearch " +
-                "server with The Elasticsearch Java High Level REST Client library.",
+                "inserted into the elasticsearch store. Elasticsearch indexing documents are converted to events when" +
+                " the documents are read from Elasticsearch indexes. The internal store is connected to the " +
+                "Elastisearch server via the Elasticsearch Java High Level REST Client library.",
         parameters = {
                 @Parameter(name = "host",
                         description = "The host of the Elasticsearch server.",
@@ -114,7 +114,7 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                         description = "The scheme type of the Elasticsearch server connection.",
                         type = {DataType.STRING}, optional = true, defaultValue = "http"),
                 @Parameter(name = "username",
-                        description = "The user name for the Elasticsearch server connection.",
+                        description = "The username for the Elasticsearch server connection.",
                         type = {DataType.STRING}, optional = true, defaultValue = "elastic"),
                 @Parameter(name = "password",
                         description = "The password for the Elasticsearch server connection.",
@@ -128,10 +128,10 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "null"),
                 @Parameter(name = "index.number.of.shards",
-                        description = "The number of shards for the index in Elasticsearch server.",
+                        description = "The number of shards allocated for the index in the Elasticsearch server.",
                         type = {DataType.INT}, optional = true, defaultValue = "3"),
                 @Parameter(name = "index.number.of.replicas",
-                        description = "The number of replicas for the index in Elasticsearch server.",
+                        description = "The number of replicas for the index in the Elasticsearch server.",
                         type = {DataType.INT}, optional = true, defaultValue = "2"),
         },
 
@@ -142,12 +142,12 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                                 "field.length=\"symbol:100\")\n" +
                                 "@PrimaryKey(\"symbol\")" +
                                 "define table StockTable (symbol string, price float, volume long);",
-                        description = "The above example creates an index named `MyStockTable` on the Elasticsearch " +
-                                "server if it does not already exist (with 3 attributes named `symbol`, `price`," +
-                                " and `volume` of the types types `string`, `float` and `long` respectively). " +
+                        description = "This example creates an index named 'MyStockTable' in the Elasticsearch " +
+                                "server if it does not already exist (with three attributes named 'symbol', 'price'," +
+                                " and 'volume' of the types 'string', 'float' and 'long' respectively). " +
                                 "The connection is made as specified by the parameters configured for the '@Store' " +
-                                "annotation. The `symbol` attribute is considered a unique field, and a Elasticsearch" +
-                                " index document id is generated for it."
+                                "annotation. The 'symbol' attribute is considered a unique field and an Elasticsearch" +
+                                " index document ID is generated for it."
                 )
         }
 )
