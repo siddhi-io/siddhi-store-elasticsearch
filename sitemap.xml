@@ -2,37 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/</loc>
-     <lastmod>2018-08-26</lastmod>
+     <lastmod>2018-09-05</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.4/</loc>
+     <lastmod>2018-09-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.3/</loc>
-     <lastmod>2018-08-26</lastmod>
+     <lastmod>2018-09-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.2/</loc>
-     <lastmod>2018-08-26</lastmod>
+     <lastmod>2018-09-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.1/</loc>
-     <lastmod>2018-08-26</lastmod>
+     <lastmod>2018-09-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.0/</loc>
-     <lastmod>2018-08-26</lastmod>
+     <lastmod>2018-09-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/latest/</loc>
-     <lastmod>2018-08-26</lastmod>
+     <lastmod>2018-09-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/about/license/</loc>
-     <lastmod>2018-08-26</lastmod>
+     <lastmod>2018-09-05</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
