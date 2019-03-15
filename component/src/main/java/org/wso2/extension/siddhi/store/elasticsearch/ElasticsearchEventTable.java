@@ -104,8 +104,8 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                 " the documents are read from Elasticsearch indexes. The internal store is connected to the " +
                 "Elastisearch server via the Elasticsearch Java High Level REST Client library.",
         parameters = {
-                @Parameter(name = "host",
-                        description = "The host of the Elasticsearch server.",
+                @Parameter(name = "hostname",
+                        description = "The hostname of the Elasticsearch server.",
                         type = {DataType.STRING}, optional = true, defaultValue = "localhost"),
                 @Parameter(name = "port",
                         description = "The port of the Elasticsearch server.",
@@ -137,7 +137,7 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
 
         examples = {
                 @Example(
-                        syntax = "@Store(type=\"elasticsearch\", host=\"localhost\", " +
+                        syntax = "@Store(type=\"elasticsearch\", hostname=\"localhost\", " +
                                 "username=\"elastic\", password=\"changeme\" , index.name=\"MyStockTable\"," +
                                 "field.length=\"symbol:100\")\n" +
                                 "@PrimaryKey(\"symbol\")" +
