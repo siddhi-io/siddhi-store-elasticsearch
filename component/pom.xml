@@ -247,7 +247,8 @@
                             org.apache.lucene.*,
                             org.apache.logging.log4j.*,
                             org.joda.time.*,
-                            com.carrotsearch.hppc.*
+                            com.carrotsearch.hppc.*,
+                            org.apache.commons.codec.*,
                         </Private-Package>
                         <Export-Package>
                             org.wso2.extension.siddhi.store.elasticsearch,
