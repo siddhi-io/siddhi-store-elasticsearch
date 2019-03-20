@@ -26,12 +26,19 @@ import org.apache.log4j.Logger;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.bulk.BackoffPolicy;
+import org.elasticsearch.action.bulk.BulkProcessor;
+import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.unit.ByteSizeUnit;
+import org.elasticsearch.common.unit.ByteSizeValue;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.wso2.extension.siddhi.store.elasticsearch.exceptions.ElasticsearchEventTableException;
@@ -60,37 +67,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_HOSTNAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_INDEX_ALIAS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_INDEX_NAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_INDEX_NUMBER_OF_REPLICAS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_PASSWORD;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BULK_ACTIONS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BULK_SIZE;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_CONCURRENT_REQUESTS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_FLUSH_INTERVAL;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_HOSTNAME;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_ALIAS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_NAME;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_NUMBER_OF_REPLICAS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_PASSWORD;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_PORT;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_SCHEME;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_USER;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BACKOFF_POLICY_RETRY_NO;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BACKOFF_POLICY_WAIT_TIME;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BULK_ACTIONS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BULK_SIZE_IN_MB;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_CONCURRENT_REQUESTS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_FLUSH_INTERVAL;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_HOSTNAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        DEFAULT_NUMBER_OF_REPLICAS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_NUMBER_OF_REPLICAS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_NUMBER_OF_SHARDS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_PASSWORD;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_PORT;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_SCHEME;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_USER_NAME;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ELASTICSEARCH_INDEX_TYPE;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        MAPPING_PROPERTIES_ELEMENT;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.MAPPING_PROPERTIES_ELEMENT;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.MAPPING_TYPE_ELEMENT;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        SETTING_INDEX_NUMBER_OF_REPLICAS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        SETTING_INDEX_NUMBER_OF_SHARDS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.SETTING_INDEX_NUMBER_OF_REPLICAS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.SETTING_INDEX_NUMBER_OF_SHARDS;
 
 /**
  * This class contains the Event table implementation for Elasticsearch indexing document as underlying data storage.
@@ -133,13 +142,40 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                 @Parameter(name = "index.number.of.replicas",
                         description = "The number of replicas for the index in the Elasticsearch server.",
                         type = {DataType.INT}, optional = true, defaultValue = "2"),
+                @Parameter(name = "bulk.actions",
+                        description = "The number of actions to be added to flush a new bulk request. " +
+                                "Use -1 to disable it",
+                        type = {DataType.INT}, optional = true, defaultValue = "1"),
+                @Parameter(name = "bulk.size",
+                        description = "The size of size of actions currently added to the bulk request to flush a " +
+                                "new bulk request in MB. Use -1 to disable it",
+                        type = {DataType.LONG}, optional = true, defaultValue = "1"),
+                @Parameter(name = "concurrent.requests",
+                        description = "The number of concurrent requests allowed to be executed. Use 0 to only allow " +
+                                "the execution of a single request",
+                        type = {DataType.INT}, optional = true, defaultValue = "0"),
+                @Parameter(name = "flush.interval",
+                        description = "The flush interval flushing any BulkRequest pending if the interval passes.",
+                        type = {DataType.LONG}, optional = true, defaultValue = "10"),
+                @Parameter(name = "backoff.policy.retry.no",
+                        description = "The number of retries until backoff " +
+                                "(The backoff policy defines how the bulk processor should handle retries of bulk " +
+                                "requests internally in case they have failed due to resource constraints " +
+                                "(i.e. a thread pool was full)).",
+                        type = {DataType.INT}, optional = true, defaultValue = "3"),
+                @Parameter(name = "backoff.policy.wait.time",
+                        description = "The constant back off policy that initially waits until the next retry " +
+                                "in seconds.",
+                        type = {DataType.LONG}, optional = true, defaultValue = "1"),
         },
 
         examples = {
                 @Example(
                         syntax = "@Store(type=\"elasticsearch\", host=\"localhost\", " +
-                                "username=\"elastic\", password=\"changeme\" , index.name=\"MyStockTable\"," +
-                                "field.length=\"symbol:100\")\n" +
+                                "username=\"elastic\", password=\"changeme\", index.name=\"MyStockTable\", " +
+                                "field.length=\"symbol:100\", bulk.actions=\"5000\", bulk.size=\"1\", " +
+                                "concurrent.requests=\"2\", flush.interval=\"1\", backoff.policy.retry.no=\"3\", " +
+                                "backoff.policy.wait.time=\"1\")\n" +
                                 "@PrimaryKey(\"symbol\")" +
                                 "define table StockTable (symbol string, price float, volume long);",
                         description = "This example creates an index named 'MyStockTable' in the Elasticsearch " +
@@ -169,6 +205,13 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private String password = DEFAULT_PASSWORD;
     private int numberOfShards = DEFAULT_NUMBER_OF_SHARDS;
     private int numberOfReplicas = DEFAULT_NUMBER_OF_REPLICAS;
+    private BulkProcessor bulkProcessor;
+    private int bulkActions = DEFAULT_BULK_ACTIONS;
+    private long bulkSize = DEFAULT_BULK_SIZE_IN_MB;
+    private int concurrentRequests = DEFAULT_CONCURRENT_REQUESTS;
+    private long flushInterval = DEFAULT_FLUSH_INTERVAL;
+    private int backoffPolicyRetryNo = DEFAULT_BACKOFF_POLICY_RETRY_NO;
+    private long backoffPolicyWaitTime = DEFAULT_BACKOFF_POLICY_WAIT_TIME;
 
 
     /**
@@ -200,8 +243,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                 hostname = configReader.readConfig(ANNOTATION_ELEMENT_HOSTNAME, hostname);
             }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_PORT))) {
-                port = Integer.parseInt(storeAnnotation.getElement(
-                        ANNOTATION_ELEMENT_PORT));
+                port = Integer.parseInt(storeAnnotation.getElement(ANNOTATION_ELEMENT_PORT));
             } else {
                 port = Integer.parseInt(configReader.readConfig(ANNOTATION_ELEMENT_HOSTNAME, String.valueOf(port)));
             }
@@ -234,10 +276,54 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_PASSWORD))) {
                 password = storeAnnotation.getElement(ANNOTATION_ELEMENT_PASSWORD);
             } else {
-                password = configReader.readConfig(ANNOTATION_ELEMENT_HOSTNAME, password);
+                password = configReader.readConfig(ANNOTATION_ELEMENT_PASSWORD, password);
             }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_ALIAS))) {
                 indexAlias = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_ALIAS);
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_BULK_ACTIONS))) {
+                bulkActions = Integer.parseInt(storeAnnotation.getElement(ANNOTATION_ELEMENT_BULK_ACTIONS));
+            } else {
+                bulkActions = Integer.parseInt(configReader.readConfig(ANNOTATION_ELEMENT_BULK_ACTIONS,
+                        String.valueOf(bulkActions)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_BULK_SIZE))) {
+                bulkSize = Long.parseLong(storeAnnotation.getElement(ANNOTATION_ELEMENT_BULK_SIZE));
+            } else {
+                bulkSize = Long.parseLong(configReader.readConfig(ANNOTATION_ELEMENT_BULK_SIZE,
+                        String.valueOf(bulkSize)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_CONCURRENT_REQUESTS))) {
+                concurrentRequests = Integer.parseInt(
+                        storeAnnotation.getElement(ANNOTATION_ELEMENT_CONCURRENT_REQUESTS));
+            } else {
+                concurrentRequests = Integer.parseInt(configReader.readConfig(ANNOTATION_ELEMENT_CONCURRENT_REQUESTS,
+                        String.valueOf(concurrentRequests)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_FLUSH_INTERVAL))) {
+                flushInterval = Long.parseLong(
+                        storeAnnotation.getElement(ANNOTATION_ELEMENT_FLUSH_INTERVAL));
+            } else {
+                flushInterval = Long.parseLong(configReader.readConfig(ANNOTATION_ELEMENT_FLUSH_INTERVAL,
+                        String.valueOf(flushInterval)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(
+                    ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO))) {
+                backoffPolicyRetryNo = Integer.parseInt(
+                        storeAnnotation.getElement(ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO));
+            } else {
+                backoffPolicyRetryNo = Integer.parseInt(
+                        configReader.readConfig(ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO,
+                                String.valueOf(backoffPolicyRetryNo)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(
+                    ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME))) {
+                backoffPolicyWaitTime = Long.parseLong(
+                        storeAnnotation.getElement(ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME));
+            } else {
+                backoffPolicyWaitTime = Long.parseLong(
+                        configReader.readConfig(ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME,
+                                String.valueOf(backoffPolicyWaitTime)));
             }
         } else {
             throw new ElasticsearchEventTableException("Elasticsearch Store annotation list null for table id : '" +
@@ -251,6 +337,15 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     httpClientBuilder.disableAuthCaching();
                     return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
                 }));
+        BulkProcessor.Builder bulkProcessorBuilder = BulkProcessor.builder(restHighLevelClient::bulkAsync,
+                new BulkProcessorListener());
+        bulkProcessorBuilder.setBulkActions(bulkActions);
+        bulkProcessorBuilder.setBulkSize(new ByteSizeValue(bulkSize, ByteSizeUnit.MB));
+        bulkProcessorBuilder.setConcurrentRequests(concurrentRequests);
+        bulkProcessorBuilder.setFlushInterval(TimeValue.timeValueSeconds(flushInterval));
+        bulkProcessorBuilder.setBackoffPolicy(BackoffPolicy.constantBackoff(
+                TimeValue.timeValueSeconds(backoffPolicyWaitTime), backoffPolicyRetryNo));
+        bulkProcessor = bulkProcessorBuilder.build();
         CreateIndexRequest request = new CreateIndexRequest(indexName);
         request.settings(Settings.builder()
                 .put(SETTING_INDEX_NUMBER_OF_SHARDS, numberOfShards)
@@ -316,11 +411,32 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             throw new ElasticsearchEventTableException("Error while creating indices for table id : '" +
                     tableDefinition.getId(), e);
         } catch (ElasticsearchStatusException e) {
-            //logging only until the index existence check feature support by the elasticsearch high rest client.
             logger.debug("Elasticsearch status exception occurs while creating index for table id: " +
                     tableDefinition.getId(), e);
         }
+    }
 
+    static class BulkProcessorListener implements BulkProcessor.Listener {
+        @Override
+        public void beforeBulk(long executionId, BulkRequest request) {
+            int numberOfActions = request.numberOfActions();
+            logger.debug("Executing bulk [{" + executionId + "}] with {" + numberOfActions + "} requests");
+        }
+
+        @Override
+        public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
+            if (response.hasFailures()) {
+                logger.warn("Bulk [{}] executed with failures for executionId: " + executionId);
+            } else {
+                logger.debug("Bulk [{" + executionId + "}] completed in {" + response.getTook().getMillis() +
+                        "} milliseconds");
+            }
+        }
+
+        @Override
+        public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
+            logger.error("Failed to execute bulk", failure);
+        }
     }
 
     /**
@@ -331,27 +447,25 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
      */
     @Override
     protected void add(List<Object[]> records) throws ConnectionUnavailableException {
-        IndexRequest request;
         for (Object[] record : records) {
+            IndexRequest indexRequest;
             if (primaryKeys != null && !primaryKeys.isEmpty()) {
                 String docId = ElasticsearchTableUtils.generateRecordIdFromPrimaryKeyValues(attributes, record,
                         primaryKeys);
-                request = new IndexRequest(indexName, ELASTICSEARCH_INDEX_TYPE, docId);
+                indexRequest = new IndexRequest(indexName, ELASTICSEARCH_INDEX_TYPE, docId);
             } else {
                 //record id will be generated by the Elasticsearch
-                request = new IndexRequest(indexName, ELASTICSEARCH_INDEX_TYPE);
+                indexRequest = new IndexRequest(indexName, ELASTICSEARCH_INDEX_TYPE);
             }
             try {
                 XContentBuilder builder = XContentFactory.jsonBuilder();
                 builder.startObject();
-                {
-                    for (int i = 0; i < record.length; i++) {
-                        builder.field(attributes.get(i).getName(), record[i]);
-                    }
+                for (int i = 0; i < record.length; i++) {
+                    builder.field(attributes.get(i).getName(), record[i]);
                 }
                 builder.endObject();
-                request.source(builder);
-                restHighLevelClient.index(request);
+                indexRequest.source(builder);
+                bulkProcessor.add(indexRequest);
             } catch (IOException e) {
                 throw new ElasticsearchEventTableException("Error while generating content mapping for records : '" +
                         records.toString() + "' in table id: " + tableDefinition.getId(), e);
@@ -425,13 +539,13 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     docId = ElasticsearchTableUtils.generateRecordIdFromPrimaryKeyValues(attributes, record,
                             primaryKeys);
                 }
-                DeleteRequest  deleteRequest = new DeleteRequest(indexName, ELASTICSEARCH_INDEX_TYPE,
+                DeleteRequest deleteRequest = new DeleteRequest(indexName, ELASTICSEARCH_INDEX_TYPE,
                         docId != null ? docId : "1");
-                restHighLevelClient.delete(deleteRequest);
+                bulkProcessor.add(deleteRequest);
             }
-        } catch (IOException e) {
+        } catch (Throwable throwable) {
             throw new ElasticsearchEventTableException("Error while deleting content mapping for records id: '" + docId
-                    + "' in table id: " + tableDefinition.getId(), e);
+                    + "' in table id: " + tableDefinition.getId(), throwable);
         }
     }
 
@@ -459,15 +573,13 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                 }
                 XContentBuilder builder = XContentFactory.jsonBuilder();
                 builder.startObject();
-                {
-                    for (int i = 0; i < attributes.size(); i++) {
-                        builder.field(attributes.get(i).getName(), record.get(attributes.get(i).getName()));
-                    }
+                for (int i = 0; i < attributes.size(); i++) {
+                    builder.field(attributes.get(i).getName(), record.get(attributes.get(i).getName()));
                 }
                 builder.endObject();
-                UpdateRequest request = new UpdateRequest(indexName, ELASTICSEARCH_INDEX_TYPE,
+                UpdateRequest updateRequest = new UpdateRequest(indexName, ELASTICSEARCH_INDEX_TYPE,
                         docId != null ? docId : "1").doc(builder);
-                restHighLevelClient.update(request);
+                bulkProcessor.add(updateRequest);
             }
         } catch (Throwable throwable) {
             throw new ElasticsearchEventTableException("Error while updating content mapping for records id: '" + docId
@@ -500,15 +612,13 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                 }
                 XContentBuilder builder = XContentFactory.jsonBuilder();
                 builder.startObject();
-                {
-                    for (int i = 0; i < attributes.size(); i++) {
-                        builder.field(attributes.get(i).getName(), record[i]);
-                    }
+                for (int i = 0; i < attributes.size(); i++) {
+                    builder.field(attributes.get(i).getName(), record[i]);
                 }
                 builder.endObject();
-                UpdateRequest request = new UpdateRequest(indexName, ELASTICSEARCH_INDEX_TYPE,
+                UpdateRequest updateRequest = new UpdateRequest(indexName, ELASTICSEARCH_INDEX_TYPE,
                         docId != null ? docId : "1").doc(builder);
-                restHighLevelClient.update(request);
+                bulkProcessor.add(updateRequest);
             }
         } catch (Throwable throwable) {
             this.add(list2);

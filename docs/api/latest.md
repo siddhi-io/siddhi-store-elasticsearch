@@ -1,4 +1,4 @@
-# API Docs - v1.1.0
+# API Docs - v1.1.1-SNAPSHOT
 
 ## Store
 
@@ -8,7 +8,7 @@
 
 <span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
 ```
-@Store(type="elasticsearch", host="<STRING>", port="<INT>", scheme="<STRING>", username="<STRING>", password="<STRING>", index.name="<STRING>", index.alias="<STRING>", index.number.of.shards="<INT>", index.number.of.replicas="<INT>")
+@Store(type="elasticsearch", host="<STRING>", port="<INT>", scheme="<STRING>", username="<STRING>", password="<STRING>", index.name="<STRING>", index.alias="<STRING>", index.number.of.shards="<INT>", index.number.of.replicas="<INT>", bulk.actions="<INT>", bulk.size="<LONG>", concurrent.requests="<INT>", flush.interval="<LONG>", backoff.policy.retry.no="<INT>", backoff.policy.wait.time="<LONG>")
 @PrimaryKey("PRIMARY_KEY")
 @Index("INDEX")
 ```
@@ -95,12 +95,60 @@
         <td style="vertical-align: top">Yes</td>
         <td style="vertical-align: top">No</td>
     </tr>
+    <tr>
+        <td style="vertical-align: top">bulk.actions</td>
+        <td style="vertical-align: top; word-wrap: break-word">The number of actions to be added to flush a new bulk request. Use -1 to disable it</td>
+        <td style="vertical-align: top">1</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">bulk.size</td>
+        <td style="vertical-align: top; word-wrap: break-word">The size of size of actions currently added to the bulk request to flush a new bulk request in MB. Use -1 to disable it</td>
+        <td style="vertical-align: top">1</td>
+        <td style="vertical-align: top">LONG</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">concurrent.requests</td>
+        <td style="vertical-align: top; word-wrap: break-word">The number of concurrent requests allowed to be executed. Use 0 to only allow the execution of a single request</td>
+        <td style="vertical-align: top">0</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">flush.interval</td>
+        <td style="vertical-align: top; word-wrap: break-word">The flush interval flushing any BulkRequest pending if the interval passes.</td>
+        <td style="vertical-align: top">10</td>
+        <td style="vertical-align: top">LONG</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">backoff.policy.retry.no</td>
+        <td style="vertical-align: top; word-wrap: break-word">The number of retries until backoff (The backoff policy defines how the bulk processor should handle retries of bulk requests internally in case they have failed due to resource constraints (i.e. a thread pool was full)).</td>
+        <td style="vertical-align: top">3</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">backoff.policy.wait.time</td>
+        <td style="vertical-align: top; word-wrap: break-word">The constant back off policy that initially waits until the next retry in seconds.</td>
+        <td style="vertical-align: top">1</td>
+        <td style="vertical-align: top">LONG</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
 </table>
 
 <span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
 <span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span>
 ```
-@Store(type="elasticsearch", host="localhost", username="elastic", password="changeme" , index.name="MyStockTable",field.length="symbol:100")
+@Store(type="elasticsearch", host="localhost", username="elastic", password="changeme", index.name="MyStockTable", field.length="symbol:100", bulk.actions="5000", bulk.size="1", concurrent.requests="2", flush.interval="1", backoff.policy.retry.no="3", backoff.policy.wait.time="1")
 @PrimaryKey("symbol")define table StockTable (symbol string, price float, volume long);
 ```
 <p style="word-wrap: break-word">This example creates an index named 'MyStockTable' in the Elasticsearch server if it does not already exist (with three attributes named 'symbol', 'price', and 'volume' of the types 'string', 'float' and 'long' respectively). The connection is made as specified by the parameters configured for the '@Store' annotation. The 'symbol' attribute is considered a unique field and an Elasticsearch index document ID is generated for it.</p>

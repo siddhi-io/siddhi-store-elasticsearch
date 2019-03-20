@@ -33,6 +33,12 @@ public class ElasticsearchTableConstants {
     public static final String ANNOTATION_ELEMENT_INDEX_NUMBER_OF_REPLICAS = "index.number.of.replicas";
     public static final String ANNOTATION_ELEMENT_INDEX_ALIAS = "index.alias";
     public static final String ANNOTATION_ELEMENT_UPDATE_BATCH_SIZE = "update.batch.size";
+    public static final String ANNOTATION_ELEMENT_BULK_ACTIONS = "bulk.actions";
+    public static final String ANNOTATION_ELEMENT_BULK_SIZE = "bulk.size";
+    public static final String ANNOTATION_ELEMENT_CONCURRENT_REQUESTS = "concurrent.requests";
+    public static final String ANNOTATION_ELEMENT_FLUSH_INTERVAL = "flush.interval";
+    public static final String ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO = "backoff.policy.retry.no";
+    public static final String ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME = "backoff.policy.wait.time";
 
     public static final String DEFAULT_HOSTNAME = "localhost";
     public static final int DEFAULT_PORT = 9200;
@@ -42,6 +48,12 @@ public class ElasticsearchTableConstants {
     public static final String DEFAULT_SCHEME = "http";
     public static final String DEFAULT_USER_NAME = "elastic";
     public static final String DEFAULT_PASSWORD = "changeme";
+    public static final int DEFAULT_BULK_ACTIONS = 1;
+    public static final long DEFAULT_BULK_SIZE_IN_MB = 1;
+    public static final int DEFAULT_CONCURRENT_REQUESTS = 0;
+    public static final long DEFAULT_FLUSH_INTERVAL = 10;
+    public static final int DEFAULT_BACKOFF_POLICY_RETRY_NO = 3;
+    public static final long DEFAULT_BACKOFF_POLICY_WAIT_TIME = 1;
 
     public static final String SETTING_INDEX_NUMBER_OF_SHARDS = "index.number_of_shards";
     public static final String SETTING_INDEX_NUMBER_OF_REPLICAS = "index.number_of_replicas";
