@@ -1,4 +1,4 @@
-# API Docs - v1.1.1-SNAPSHOT
+# API Docs - v1.2.0-SNAPSHOT
 
 ## Store
 
@@ -8,7 +8,7 @@
 
 <span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
 ```
-@Store(type="elasticsearch", host="<STRING>", port="<INT>", scheme="<STRING>", username="<STRING>", password="<STRING>", index.name="<STRING>", index.alias="<STRING>", index.number.of.shards="<INT>", index.number.of.replicas="<INT>", bulk.actions="<INT>", bulk.size="<LONG>", concurrent.requests="<INT>", flush.interval="<LONG>", backoff.policy.retry.no="<INT>", backoff.policy.wait.time="<LONG>")
+@Store(type="elasticsearch", hostname="<STRING>", port="<INT>", scheme="<STRING>", username="<STRING>", password="<STRING>", index.name="<STRING>", index.alias="<STRING>", index.number.of.shards="<INT>", index.number.of.replicas="<INT>", bulk.actions="<INT>", bulk.size="<LONG>", concurrent.requests="<INT>", flush.interval="<LONG>", backoff.policy.retry.no="<INT>", backoff.policy.wait.time="<LONG>")
 @PrimaryKey("PRIMARY_KEY")
 @Index("INDEX")
 ```
@@ -24,8 +24,8 @@
         <th>Dynamic</th>
     </tr>
     <tr>
-        <td style="vertical-align: top">host</td>
-        <td style="vertical-align: top; word-wrap: break-word">The host of the Elasticsearch server.</td>
+        <td style="vertical-align: top">hostname</td>
+        <td style="vertical-align: top; word-wrap: break-word">The hostname of the Elasticsearch server.</td>
         <td style="vertical-align: top">localhost</td>
         <td style="vertical-align: top">STRING</td>
         <td style="vertical-align: top">Yes</td>
