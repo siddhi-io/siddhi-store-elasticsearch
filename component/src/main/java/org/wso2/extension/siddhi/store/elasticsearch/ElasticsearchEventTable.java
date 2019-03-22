@@ -22,6 +22,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.log4j.Logger;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.alias.Alias;
@@ -76,6 +77,8 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_BULK_SIZE;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_CONCURRENT_REQUESTS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_FLUSH_INTERVAL;
@@ -106,6 +109,7 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
         DEFAULT_CONCURRENT_REQUESTS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_FLUSH_INTERVAL;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_HOSTNAME;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_IO_THREAD_COUNT;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_NUMBER_OF_REPLICAS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_NUMBER_OF_SHARDS;
@@ -233,6 +237,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private long flushInterval = DEFAULT_FLUSH_INTERVAL;
     private int backoffPolicyRetryNo = DEFAULT_BACKOFF_POLICY_RETRY_NO;
     private long backoffPolicyWaitTime = DEFAULT_BACKOFF_POLICY_WAIT_TIME;
+    private int ioThreadCount = DEFAULT_IO_THREAD_COUNT;
 
 
     /**
@@ -346,6 +351,15 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                         configReader.readConfig(ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME,
                                 String.valueOf(backoffPolicyWaitTime)));
             }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(
+                    ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT))) {
+                ioThreadCount = Integer.parseInt(
+                        storeAnnotation.getElement(ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT));
+            } else {
+                ioThreadCount = Integer.parseInt(
+                        configReader.readConfig(ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT,
+                                String.valueOf(ioThreadCount)));
+            }
         } else {
             throw new ElasticsearchEventTableException("Elasticsearch Store annotation list null for table id : '" +
                     tableDefinition.getId() + "', required properties cannot be resolved.");
@@ -356,6 +370,8 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         restHighLevelClient = new RestHighLevelClient(RestClient.builder(new HttpHost(hostname, port, scheme)).
                 setHttpClientConfigCallback(httpClientBuilder -> {
                     httpClientBuilder.disableAuthCaching();
+                    httpClientBuilder.setDefaultIOReactorConfig(IOReactorConfig.custom().
+                            setIoThreadCount(ioThreadCount).build());
                     return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
                 }));
         BulkProcessor.Builder bulkProcessorBuilder = BulkProcessor.builder(restHighLevelClient::bulkAsync,
