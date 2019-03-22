@@ -26,7 +26,7 @@
     <packaging>pom</packaging>
     <groupId>org.wso2.extension.siddhi.store.elasticsearch</groupId>
     <artifactId>siddhi-store-elasticsearch-parent</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.1.2-SNAPSHOT</version>
     <name>Siddhi Extension - Elasticsearch Store</name>
     <profiles>
         <profile>
@@ -190,16 +190,21 @@
     </build>
     <properties>
         <siddhi.version>4.4.8</siddhi.version>
+        <siddhi.version.range>(4.2.0,5.0.0)</siddhi.version.range>
         <testng.version>6.11</testng.version>
         <elasticsearch.version>6.2.4</elasticsearch.version>
+        <elasticsearch.version.range>[6.2.4,7.0.0)</elasticsearch.version.range>
         <joda.time.version>2.9.9</joda.time.version>
         <lucene.core.version>7.2.1</lucene.core.version>
         <http.asyncc.lient.version>4.1.2</http.asyncc.lient.version>
         <http.nio.version>4.4.5</http.nio.version>
         <http.client.version>4.5.2</http.client.version>
+        <http.client.version.range>(4.5.2,5.0.0)</http.client.version.range>
         <http.core.version>4.4.5</http.core.version>
+        <http.core.version.range>(4.4.5,5.0.0)</http.core.version.range>
         <commons.codec.version>1.10</commons.codec.version>
         <commons.logging.version>1.2</commons.logging.version>
+        <commons.logging.version.range>(1.2,2)</commons.logging.version.range>
         <log4j.version>1.2.17.wso2v1</log4j.version>
         <carbon.transport.version>4.4.15</carbon.transport.version>
         <siddhi.map.json.version>4.0.29</siddhi.map.json.version>
