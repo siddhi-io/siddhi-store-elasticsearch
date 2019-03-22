@@ -39,6 +39,7 @@ public class ElasticsearchTableConstants {
     public static final String ANNOTATION_ELEMENT_FLUSH_INTERVAL = "flush.interval";
     public static final String ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO = "backoff.policy.retry.no";
     public static final String ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME = "backoff.policy.wait.time";
+    public static final String ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT = "io.thread.count";
 
     public static final String DEFAULT_HOSTNAME = "localhost";
     public static final int DEFAULT_PORT = 9200;
@@ -54,6 +55,7 @@ public class ElasticsearchTableConstants {
     public static final long DEFAULT_FLUSH_INTERVAL = 10;
     public static final int DEFAULT_BACKOFF_POLICY_RETRY_NO = 3;
     public static final long DEFAULT_BACKOFF_POLICY_WAIT_TIME = 1;
+    public static final int DEFAULT_IO_THREAD_COUNT = 1;
 
     public static final String SETTING_INDEX_NUMBER_OF_SHARDS = "index.number_of_shards";
     public static final String SETTING_INDEX_NUMBER_OF_REPLICAS = "index.number_of_replicas";
