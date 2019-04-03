@@ -105,6 +105,8 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_INDEX_TYPE;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_MEMBER_LIST;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_PASSWORD;
@@ -133,6 +135,7 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
         DEFAULT_CONCURRENT_REQUESTS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_FLUSH_INTERVAL;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_HOSTNAME;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_INDEX_TYPE;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_IO_THREAD_COUNT;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_NUMBER_OF_REPLICAS;
@@ -146,7 +149,6 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_TRUSTSTORE_PASS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_TRUSTSTORE_TYPE;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_USER_NAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ELASTICSEARCH_INDEX_TYPE;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         MAPPING_PROPERTIES_ELEMENT;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.MAPPING_TYPE_ELEMENT;
@@ -191,6 +193,9 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                         description = "The name of the Elasticsearch index.",
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "The table name defined in the Siddhi App query."),
+                @Parameter(name = "index.type",
+                        description = "The the type of the index.",
+                        type = {DataType.STRING}, optional = true, defaultValue = "_doc"),
                 @Parameter(name = "payload.index.of.index.name",
                         description = "The payload which is used to create the index. This can be used if the user " +
                                 "needs to create index names dynamically",
@@ -302,6 +307,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private List<String> primaryKeys;
     private String hostname = DEFAULT_HOSTNAME;
     private String indexName;
+    private String indexType = DEFAULT_INDEX_TYPE;
     private String indexAlias;
     private int port = DEFAULT_PORT;
     private String scheme = DEFAULT_SCHEME;
@@ -357,6 +363,11 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                 port = Integer.parseInt(storeAnnotation.getElement(ANNOTATION_ELEMENT_PORT));
             } else {
                 port = Integer.parseInt(configReader.readConfig(ANNOTATION_ELEMENT_HOSTNAME, String.valueOf(port)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE))) {
+               indexType = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE);
+            } else {
+               indexType = configReader.readConfig(ANNOTATION_ELEMENT_INDEX_TYPE, indexType);
             }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.
                     getElement(ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS))) {
@@ -559,7 +570,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             XContentBuilder builder = XContentFactory.jsonBuilder();
             builder.startObject();
             {
-                builder.startObject(ELASTICSEARCH_INDEX_TYPE);
+                builder.startObject(indexType);
                 {
                     builder.startObject(MAPPING_PROPERTIES_ELEMENT);
                     {
@@ -659,10 +670,10 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             if (primaryKeys != null && !primaryKeys.isEmpty()) {
                 String docId = ElasticsearchTableUtils.generateRecordIdFromPrimaryKeyValues(attributes, record,
                         primaryKeys);
-                indexRequest = new IndexRequest(indexName, ELASTICSEARCH_INDEX_TYPE, docId);
+                indexRequest = new IndexRequest(indexName, indexType, docId);
             } else {
                 //record id will be generated by the Elasticsearch
-                indexRequest = new IndexRequest(indexName, ELASTICSEARCH_INDEX_TYPE);
+                indexRequest = new IndexRequest(indexName, indexType);
             }
             try {
                 XContentBuilder builder = XContentFactory.jsonBuilder();
@@ -703,10 +714,10 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             compiledCondition) throws ElasticsearchServiceException {
         String condition = ElasticsearchTableUtils.resolveCondition((ElasticsearchCompiledCondition) compiledCondition,
                 findConditionParameterMap);
-        return new ElasticsearchRecordIterator(indexName, condition, restHighLevelClient, attributes);
+        return new ElasticsearchRecordIterator(indexName, indexType, condition, restHighLevelClient, attributes);
     }
 
-    /**
+    /**.
      * Check if matching record exist or not
      *
      * @param containsConditionParameterMap map of matching StreamVariable Ids and their values corresponding to the
@@ -746,7 +757,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     docId = ElasticsearchTableUtils.generateRecordIdFromPrimaryKeyValues(attributes, record,
                             primaryKeys);
                 }
-                DeleteRequest deleteRequest = new DeleteRequest(indexName, ELASTICSEARCH_INDEX_TYPE,
+                DeleteRequest deleteRequest = new DeleteRequest(indexName, indexType,
                         docId != null ? docId : "1");
                 bulkProcessor.add(deleteRequest);
             }
@@ -784,7 +795,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     builder.field(attributes.get(i).getName(), record.get(attributes.get(i).getName()));
                 }
                 builder.endObject();
-                UpdateRequest updateRequest = new UpdateRequest(indexName, ELASTICSEARCH_INDEX_TYPE,
+                UpdateRequest updateRequest = new UpdateRequest(indexName, indexType,
                         docId != null ? docId : "1").doc(builder);
                 bulkProcessor.add(updateRequest);
             }
@@ -823,7 +834,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     builder.field(attributes.get(i).getName(), record[i]);
                 }
                 builder.endObject();
-                UpdateRequest updateRequest = new UpdateRequest(indexName, ELASTICSEARCH_INDEX_TYPE,
+                UpdateRequest updateRequest = new UpdateRequest(indexName, indexType,
                         docId != null ? docId : "1").doc(builder);
                 bulkProcessor.add(updateRequest);
             }
