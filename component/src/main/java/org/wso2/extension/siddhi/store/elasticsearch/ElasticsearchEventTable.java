@@ -23,6 +23,8 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
 import org.apache.log4j.Logger;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.alias.Alias;
@@ -64,6 +66,16 @@ import org.wso2.siddhi.query.api.definition.TableDefinition;
 import org.wso2.siddhi.query.api.util.AnnotationHelper;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -93,11 +105,23 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_MEMBER_LIST;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_PASSWORD;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_PORT;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_SCHEME;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_SSL_ENABLED;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_TRUSRTSTORE_PASS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_TRUSRTSTORE_PATH;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_USER;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_BACKOFF_POLICY_RETRY_NO;
@@ -114,8 +138,13 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
         DEFAULT_NUMBER_OF_REPLICAS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_NUMBER_OF_SHARDS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_PASSWORD;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_PORT;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_SCHEME;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_SSL_ENABLED;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_TRUSTSTORE_PASS;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_TRUSTSTORE_TYPE;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_USER_NAME;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ELASTICSEARCH_INDEX_TYPE;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
@@ -147,6 +176,11 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                 @Parameter(name = "scheme",
                         description = "The scheme type of the Elasticsearch server connection.",
                         type = {DataType.STRING}, optional = true, defaultValue = "http"),
+                @Parameter(name = "elasticsearch.member.list",
+                        description = "The list of elasticsearch host names. in comma separated manner" +
+                                "https://hostname1:9200,https://hostname2:9200",
+                        type = {DataType.STRING}, optional = true,
+                        defaultValue = "null"),
                 @Parameter(name = "username",
                         description = "The username for the Elasticsearch server connection.",
                         type = {DataType.STRING}, optional = true, defaultValue = "elastic"),
@@ -157,6 +191,11 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                         description = "The name of the Elasticsearch index.",
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "The table name defined in the Siddhi App query."),
+                @Parameter(name = "payload.index.of.index.name",
+                        description = "The payload which is used to create the index. This can be used if the user " +
+                                "needs to create index names dynamically",
+                        type = {DataType.INT}, optional = true,
+                        defaultValue = "-1"),
                 @Parameter(name = "index.alias",
                         description = "The alias of the Elasticsearch index.",
                         type = {DataType.STRING}, optional = true,
@@ -192,6 +231,22 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                         description = "The constant back off policy that initially waits until the next retry " +
                                 "in seconds.",
                         type = {DataType.LONG}, optional = true, defaultValue = "1"),
+                @Parameter(name = "ssl.enabled",
+                        description = "SSL is enabled or not.",
+                        type = {DataType.BOOL}, optional = true,
+                        defaultValue = "null"),
+                @Parameter(name = "trust.store.type",
+                        description = "Trust store type.",
+                        type = {DataType.STRING}, optional = true,
+                        defaultValue = "jks"),
+                @Parameter(name = "trust.store.path",
+                        description = "Trust store path.",
+                        type = {DataType.STRING}, optional = true,
+                        defaultValue = "null"),
+                @Parameter(name = "trust.store.pass",
+                        description = "Trust store password.",
+                        type = {DataType.STRING}, optional = true,
+                        defaultValue = "wso2carbon")
         },
 
         examples = {
@@ -209,6 +264,30 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                                 "The connection is made as specified by the parameters configured for the '@Store' " +
                                 "annotation. The 'symbol' attribute is considered a unique field and an Elasticsearch" +
                                 " index document ID is generated for it."
+                ),
+                @Example(
+                        syntax = "@Store(type=\"elasticsearch\", host=\"localhost\", " +
+                                "username=\"elastic\", password=\"changeme\", index.name=\"MyStockTable\", " +
+                                "field.length=\"symbol:100\", bulk.actions=\"5000\", bulk.size=\"1\", " +
+                                "concurrent.requests=\"2\", flush.interval=\"1\", backoff.policy.retry.no=\"3\", " +
+                                "backoff.policy.wait.time=\"1\", ssl.enabled=\"true\", trust.store.type=\"jks\", " +
+                                "trust.store.path=\"/User/wso2/wso2sp/resources/security/client-truststore.jks\", " +
+                                "trust.store.pass=\"wso2carbon\")\n" +
+                                "@PrimaryKey(\"symbol\")" +
+                                "define table StockTable (symbol string, price float, volume long);",
+                        description = "This example uses SSL to connect to Elasticsearch."
+                ),
+                @Example(
+                        syntax = "@Store(type=\"elasticsearch\", " +
+                                "elasticsearch.member.list=\"https://hostname1:9200,https://hostname2:9200\", " +
+                                "username=\"elastic\", password=\"changeme\", index.name=\"MyStockTable\", " +
+                                "field.length=\"symbol:100\", bulk.actions=\"5000\", bulk.size=\"1\", " +
+                                "concurrent.requests=\"2\", flush.interval=\"1\", backoff.policy.retry.no=\"3\", " +
+                                "backoff.policy.wait.time=\"1\")\n" +
+                                "@PrimaryKey(\"symbol\")" +
+                                "define table StockTable (symbol string, price float, volume long);",
+                        description = "This example defined several elasticsearch members to publish data using " +
+                                "elasticsearch.member.list parameter."
                 )
         }
 )
@@ -238,6 +317,12 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private int backoffPolicyRetryNo = DEFAULT_BACKOFF_POLICY_RETRY_NO;
     private long backoffPolicyWaitTime = DEFAULT_BACKOFF_POLICY_WAIT_TIME;
     private int ioThreadCount = DEFAULT_IO_THREAD_COUNT;
+    private String trustStorePass = DEFAULT_TRUSTSTORE_PASS;
+    private String trustStorePath;
+    private String trustStoreType = DEFAULT_TRUSTSTORE_TYPE;
+    private boolean sslEnabled = DEFAULT_SSL_ENABLED;
+    private int payloadIndexOfIndexName = DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME;
+    private String listOfHostnames;
 
 
     /**
@@ -360,6 +445,37 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                         configReader.readConfig(ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT,
                                 String.valueOf(ioThreadCount)));
             }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_SSL_ENABLED))) {
+                sslEnabled = Boolean.parseBoolean(storeAnnotation.getElement(ANNOTATION_ELEMENT_SSL_ENABLED));
+            } else {
+                sslEnabled = Boolean.parseBoolean(configReader.readConfig(ANNOTATION_ELEMENT_SSL_ENABLED,
+                        String.valueOf(sslEnabled)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_TRUSRTSTORE_PASS))) {
+                trustStorePass = storeAnnotation.getElement(ANNOTATION_ELEMENT_TRUSRTSTORE_PASS);
+            } else {
+                trustStorePass = configReader.readConfig(ANNOTATION_ELEMENT_TRUSRTSTORE_PASS, trustStorePass);
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_TRUSRTSTORE_PATH))) {
+                trustStorePath = storeAnnotation.getElement(ANNOTATION_ELEMENT_TRUSRTSTORE_PATH);
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE))) {
+                trustStoreType = storeAnnotation.getElement(ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE);
+            } else {
+                trustStoreType = configReader.readConfig(ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE, trustStoreType);
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(
+                    ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME))) {
+                payloadIndexOfIndexName = Integer.parseInt(
+                        storeAnnotation.getElement(ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME));
+            } else {
+                payloadIndexOfIndexName = Integer.parseInt(
+                        configReader.readConfig(ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME,
+                                String.valueOf(payloadIndexOfIndexName)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST))) {
+                listOfHostnames = storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST);
+            }
         } else {
             throw new ElasticsearchEventTableException("Elasticsearch Store annotation list null for table id : '" +
                     tableDefinition.getId() + "', required properties cannot be resolved.");
@@ -367,11 +483,62 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY,
                 new UsernamePasswordCredentials(userName, password));
-        restHighLevelClient = new RestHighLevelClient(RestClient.builder(new HttpHost(hostname, port, scheme)).
+        HttpHost httpHostList[];
+        if (listOfHostnames != null) {
+            String hostNameList[] = listOfHostnames.split(",");
+            httpHostList = new HttpHost[hostNameList.length];
+            for (int i = 0; i < httpHostList.length; i++) {
+                try {
+                    URL domain = new URL(hostNameList[i]);
+                    httpHostList[i] = new HttpHost(domain.getHost(), domain.getPort(), domain.getProtocol());
+                } catch (MalformedURLException e) {
+                    throw new ElasticsearchEventTableException("Provided elastic search hostname url list is " +
+                            "malformed of table id : '" + tableDefinition.getId() + ".", e);
+                }
+            }
+        } else {
+            httpHostList = new HttpHost[1];
+            httpHostList[0] = new HttpHost(hostname, port, scheme);
+        }
+        restHighLevelClient = new RestHighLevelClient(RestClient.builder(httpHostList).
                 setHttpClientConfigCallback(httpClientBuilder -> {
                     httpClientBuilder.disableAuthCaching();
                     httpClientBuilder.setDefaultIOReactorConfig(IOReactorConfig.custom().
                             setIoThreadCount(ioThreadCount).build());
+                    if (sslEnabled) {
+                        try {
+                            KeyStore trustStore = KeyStore.getInstance(trustStoreType);
+                            if (trustStorePath == null) {
+                                throw new ElasticsearchEventTableException("Please provide a valid path for trust " +
+                                        "store location for table id : '" + tableDefinition.getId());
+                            } else {
+                                try (InputStream is = Files.newInputStream(Paths.get(trustStorePath))) {
+                                    trustStore.load(is, trustStorePass.toCharArray());
+                                }
+                                SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(trustStore, null);
+                                httpClientBuilder.setSSLContext(sslBuilder.build());
+                            }
+                        } catch (NoSuchAlgorithmException e) {
+                            throw new ElasticsearchEventTableException("Algorithm used to check the integrity of the " +
+                                    "trustStore cannot be found for when loading trustStore for table id : '" +
+                                    tableDefinition.getId(), e);
+                        } catch (KeyStoreException e) {
+                            throw new ElasticsearchEventTableException("The trustStore type truststore.type = " +
+                                    "" + trustStoreType + " defined is incorrect while creating table id : '" +
+                                    tableDefinition.getId(), e);
+                        } catch (CertificateException e) {
+                            throw new ElasticsearchEventTableException("Any of the certificates in the keystore " +
+                                    "could not be loaded when loading trustStore for table id : '" +
+                                    tableDefinition.getId(), e);
+                        } catch (IOException e) {
+                            throw new ElasticsearchEventTableException("The trustStore password = " + trustStorePass +
+                                    " or trustStore path " + trustStorePath + " defined is incorrect while creating " +
+                                    "sslContext for table id : '" + tableDefinition.getId(), e);
+                        } catch (KeyManagementException e) {
+                            throw new ElasticsearchEventTableException("Error occurred while builing sslContext for " +
+                                    "table id : '" + tableDefinition.getId(), e);
+                        }
+                    }
                     return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
                 }));
         BulkProcessor.Builder bulkProcessorBuilder = BulkProcessor.builder(restHighLevelClient::bulkAsync,
@@ -485,6 +652,9 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     @Override
     protected void add(List<Object[]> records) throws ConnectionUnavailableException {
         for (Object[] record : records) {
+            if (payloadIndexOfIndexName != -1) {
+                indexName = (String) record[payloadIndexOfIndexName];
+            }
             IndexRequest indexRequest;
             if (primaryKeys != null && !primaryKeys.isEmpty()) {
                 String docId = ElasticsearchTableUtils.generateRecordIdFromPrimaryKeyValues(attributes, record,
