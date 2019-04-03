@@ -40,6 +40,12 @@ public class ElasticsearchTableConstants {
     public static final String ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO = "backoff.policy.retry.no";
     public static final String ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME = "backoff.policy.wait.time";
     public static final String ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT = "io.thread.count";
+    public static final String ANNOTATION_ELEMENT_SSL_ENABLED = "ssl.enabled";
+    public static final String ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE = "trust.store.type";
+    public static final String ANNOTATION_ELEMENT_TRUSRTSTORE_PATH = "trust.store.path";
+    public static final String ANNOTATION_ELEMENT_TRUSRTSTORE_PASS = "trust.store.pass";
+    public static final String ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME = "payload.index.of.index.name";
+    public static final String ANNOTATION_ELEMENT_MEMBER_LIST = "elasticsearch.member.list";
 
     public static final String DEFAULT_HOSTNAME = "localhost";
     public static final int DEFAULT_PORT = 9200;
@@ -56,7 +62,10 @@ public class ElasticsearchTableConstants {
     public static final int DEFAULT_BACKOFF_POLICY_RETRY_NO = 3;
     public static final long DEFAULT_BACKOFF_POLICY_WAIT_TIME = 1;
     public static final int DEFAULT_IO_THREAD_COUNT = 1;
-
+    public static final boolean DEFAULT_SSL_ENABLED = false;
+    public static final String DEFAULT_TRUSTSTORE_PASS = "wso2carbon";
+    public static final String DEFAULT_TRUSTSTORE_TYPE = "jks";
+    public static final int DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME = -1;
     public static final String SETTING_INDEX_NUMBER_OF_SHARDS = "index.number_of_shards";
     public static final String SETTING_INDEX_NUMBER_OF_REPLICAS = "index.number_of_replicas";
 
