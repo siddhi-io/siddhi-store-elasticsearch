@@ -2,67 +2,72 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.1.4/</loc>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.1.3/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.1.2/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.1.1/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.1.0/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.5/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.4/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.3/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.2/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.1/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/1.0.0/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/latest/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://wso2-extensions.github.io/siddhi-store-elasticsearch/about/license/</loc>
-     <lastmod>2019-04-03</lastmod>
+     <lastmod>2019-04-26</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
