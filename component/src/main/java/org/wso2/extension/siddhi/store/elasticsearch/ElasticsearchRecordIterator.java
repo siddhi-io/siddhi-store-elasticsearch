@@ -28,7 +28,6 @@ import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.wso2.extension.siddhi.store.elasticsearch.exceptions.ElasticsearchServiceException;
-import org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants;
 import org.wso2.siddhi.core.table.record.RecordIterator;
 import org.wso2.siddhi.query.api.definition.Attribute;
 
@@ -45,13 +44,13 @@ public class ElasticsearchRecordIterator implements RecordIterator<Object[]> {
     private List<Attribute> attributes;
     private Iterator<SearchHit> elasticsearchHitsIterator;
 
-    public ElasticsearchRecordIterator(String indexName, String queryString, RestHighLevelClient restHighLevelClient,
-                                       List<Attribute> attributes)
+    public ElasticsearchRecordIterator(String indexName, String indexType, String queryString, 
+                                       RestHighLevelClient restHighLevelClient, List<Attribute> attributes)
             throws ElasticsearchServiceException {
         this.attributes = attributes;
         QueryBuilder queryBuilder = getQueryBuilder(queryString);
         SearchRequest searchRequest = new SearchRequest(indexName);
-        searchRequest.types(ElasticsearchTableConstants.ELASTICSEARCH_INDEX_TYPE);
+        searchRequest.types(indexType);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(queryBuilder);
         searchRequest.source(searchSourceBuilder);
