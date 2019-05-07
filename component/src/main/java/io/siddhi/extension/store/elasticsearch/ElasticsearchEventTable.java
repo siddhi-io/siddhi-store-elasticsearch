@@ -15,8 +15,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.extension.siddhi.store.elasticsearch;
+package io.siddhi.extension.store.elasticsearch;
 
+
+import io.siddhi.annotation.Example;
+import io.siddhi.annotation.Extension;
+import io.siddhi.annotation.Parameter;
+import io.siddhi.annotation.util.DataType;
+import io.siddhi.core.exception.ConnectionUnavailableException;
+import io.siddhi.core.table.record.AbstractRecordTable;
+import io.siddhi.core.table.record.ExpressionBuilder;
+import io.siddhi.core.table.record.RecordIterator;
+import io.siddhi.core.util.SiddhiConstants;
+import io.siddhi.core.util.collection.operator.CompiledCondition;
+import io.siddhi.core.util.collection.operator.CompiledExpression;
+import io.siddhi.core.util.config.ConfigReader;
+import io.siddhi.extension.store.elasticsearch.exceptions.ElasticsearchEventTableException;
+import io.siddhi.extension.store.elasticsearch.exceptions.ElasticsearchServiceException;
+import io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableUtils;
+import io.siddhi.query.api.annotation.Annotation;
+import io.siddhi.query.api.annotation.Element;
+import io.siddhi.query.api.definition.Attribute;
+import io.siddhi.query.api.definition.TableDefinition;
+import io.siddhi.query.api.util.AnnotationHelper;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -45,26 +66,6 @@ import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.wso2.extension.siddhi.store.elasticsearch.exceptions.ElasticsearchEventTableException;
-import org.wso2.extension.siddhi.store.elasticsearch.exceptions.ElasticsearchServiceException;
-import org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableUtils;
-import org.wso2.siddhi.annotation.Example;
-import org.wso2.siddhi.annotation.Extension;
-import org.wso2.siddhi.annotation.Parameter;
-import org.wso2.siddhi.annotation.util.DataType;
-import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
-import org.wso2.siddhi.core.table.record.AbstractRecordTable;
-import org.wso2.siddhi.core.table.record.ExpressionBuilder;
-import org.wso2.siddhi.core.table.record.RecordIterator;
-import org.wso2.siddhi.core.util.SiddhiConstants;
-import org.wso2.siddhi.core.util.collection.operator.CompiledCondition;
-import org.wso2.siddhi.core.util.collection.operator.CompiledExpression;
-import org.wso2.siddhi.core.util.config.ConfigReader;
-import org.wso2.siddhi.query.api.annotation.Annotation;
-import org.wso2.siddhi.query.api.annotation.Element;
-import org.wso2.siddhi.query.api.definition.Attribute;
-import org.wso2.siddhi.query.api.definition.TableDefinition;
-import org.wso2.siddhi.query.api.util.AnnotationHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,81 +82,81 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_BULK_ACTIONS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_BULK_SIZE;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_CONCURRENT_REQUESTS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_FLUSH_INTERVAL;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_HOSTNAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_INDEX_ALIAS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_INDEX_NAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_INDEX_NUMBER_OF_REPLICAS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_INDEX_TYPE;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_MEMBER_LIST;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_PASSWORD;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_PORT;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_SCHEME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_SSL_ENABLED;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_TRUSRTSTORE_PASS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_TRUSRTSTORE_PATH;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_USER;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_USER;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_BACKOFF_POLICY_RETRY_NO;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_BACKOFF_POLICY_WAIT_TIME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BULK_ACTIONS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BULK_SIZE_IN_MB;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BULK_ACTIONS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BULK_SIZE_IN_MB;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_CONCURRENT_REQUESTS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_FLUSH_INTERVAL;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_HOSTNAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_INDEX_TYPE;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_IO_THREAD_COUNT;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_FLUSH_INTERVAL;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_HOSTNAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_INDEX_TYPE;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_IO_THREAD_COUNT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_NUMBER_OF_REPLICAS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_NUMBER_OF_SHARDS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_PASSWORD;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_NUMBER_OF_SHARDS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_PASSWORD;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_PORT;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_SCHEME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_SSL_ENABLED;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_TRUSTSTORE_PASS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_TRUSTSTORE_TYPE;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_USER_NAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_PORT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_SCHEME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_SSL_ENABLED;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_TRUSTSTORE_PASS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_TRUSTSTORE_TYPE;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_USER_NAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         MAPPING_PROPERTIES_ELEMENT;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.MAPPING_TYPE_ELEMENT;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.MAPPING_TYPE_ELEMENT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         SETTING_INDEX_NUMBER_OF_REPLICAS;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         SETTING_INDEX_NUMBER_OF_SHARDS;
 
 /**
@@ -366,9 +367,9 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                 port = Integer.parseInt(configReader.readConfig(ANNOTATION_ELEMENT_HOSTNAME, String.valueOf(port)));
             }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE))) {
-               indexType = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE);
+                indexType = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE);
             } else {
-               indexType = configReader.readConfig(ANNOTATION_ELEMENT_INDEX_TYPE, indexType);
+                indexType = configReader.readConfig(ANNOTATION_ELEMENT_INDEX_TYPE, indexType);
             }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.
                     getElement(ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS))) {

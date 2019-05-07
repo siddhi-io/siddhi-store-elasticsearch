@@ -16,12 +16,12 @@
  * under the License.
  */
 
-package org.wso2.extension.siddhi.store.elasticsearch.utils;
+package io.siddhi.extension.store.elasticsearch.utils;
 
+import io.siddhi.extension.store.elasticsearch.ElasticsearchCompiledCondition;
+import io.siddhi.query.api.definition.Attribute;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.extension.siddhi.store.elasticsearch.ElasticsearchCompiledCondition;
-import org.wso2.siddhi.query.api.definition.Attribute;
 
 import java.nio.charset.Charset;
 import java.util.List;

@@ -16,8 +16,11 @@
  * under the License.
  */
 
-package org.wso2.extension.siddhi.store.elasticsearch;
+package io.siddhi.extension.store.elasticsearch;
 
+import io.siddhi.core.table.record.RecordIterator;
+import io.siddhi.extension.store.elasticsearch.exceptions.ElasticsearchServiceException;
+import io.siddhi.query.api.definition.Attribute;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -27,9 +30,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.wso2.extension.siddhi.store.elasticsearch.exceptions.ElasticsearchServiceException;
-import org.wso2.siddhi.core.table.record.RecordIterator;
-import org.wso2.siddhi.query.api.definition.Attribute;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class ElasticsearchRecordIterator implements RecordIterator<Object[]> {
     private List<Attribute> attributes;
     private Iterator<SearchHit> elasticsearchHitsIterator;
 
-    public ElasticsearchRecordIterator(String indexName, String indexType, String queryString, 
+    public ElasticsearchRecordIterator(String indexName, String indexType, String queryString,
                                        RestHighLevelClient restHighLevelClient, List<Attribute> attributes)
             throws ElasticsearchServiceException {
         this.attributes = attributes;

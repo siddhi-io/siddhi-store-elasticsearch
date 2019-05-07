@@ -5,7 +5,7 @@
 <suite name="Siddhi-Store-Elasticsearch-Test-Suite" parallel="false">
     <test name="Siddhi-store-elasticsearch-tests" preserve-order="true" parallel="false">
         <classes>
-            <class name="org.wso2.extension.siddhi.store.elasticsearch.TestCaseOfElasticsearchEventTableIT"/>
+            <class name="io.siddhi.extension.store.elasticsearch.TestCaseOfElasticsearchEventTableIT"/>
         </classes>
     </test>
 </suite>

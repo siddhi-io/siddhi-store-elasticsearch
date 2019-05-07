@@ -15,9 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.extension.siddhi.store.elasticsearch.exceptions;
+package io.siddhi.extension.store.elasticsearch.exceptions;
 
-import org.wso2.siddhi.core.exception.SiddhiAppRuntimeException;
+import io.siddhi.core.exception.SiddhiAppRuntimeException;
 
 /**
  * This exception represents the SiddhiAppRuntimeException which might be thrown if there are any issues in the

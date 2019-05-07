@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.extension.siddhi.store.elasticsearch.utils;
+package io.siddhi.extension.store.elasticsearch.utils;
 
 /**
  * This class contains the constants values required by the elasticsearch table implementation

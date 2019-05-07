@@ -15,8 +15,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.extension.siddhi.store.elasticsearch.test;
+package io.siddhi.extension.store.elasticsearch.test;
 
+import io.siddhi.core.SiddhiAppRuntime;
+import io.siddhi.core.SiddhiManager;
+import io.siddhi.core.event.Event;
+import io.siddhi.core.query.output.callback.QueryCallback;
+import io.siddhi.core.stream.input.InputHandler;
+import io.siddhi.core.util.EventPrinter;
+import io.siddhi.extension.store.elasticsearch.test.utils.ElasticsearchUtils;
 import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.AssertJUnit;
@@ -24,13 +31,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import org.wso2.extension.siddhi.store.elasticsearch.test.utils.ElasticsearchUtils;
-import org.wso2.siddhi.core.SiddhiAppRuntime;
-import org.wso2.siddhi.core.SiddhiManager;
-import org.wso2.siddhi.core.event.Event;
-import org.wso2.siddhi.core.query.output.callback.QueryCallback;
-import org.wso2.siddhi.core.stream.input.InputHandler;
-import org.wso2.siddhi.core.util.EventPrinter;
 
 public class TestCaseOfElasticsearchEventTableIT {
     private static final Logger log = Logger.getLogger(TestCaseOfElasticsearchEventTableIT.class);
@@ -157,7 +157,7 @@ public class TestCaseOfElasticsearchEventTableIT {
         SiddhiManager siddhiManager = new SiddhiManager();
         String streams =
                 "define stream StockStream (symbol string, price float, volume long); \n" +
-                "define stream UpdateStream (symbol string, price float, volume long); \n" +
+                        "define stream UpdateStream (symbol string, price float, volume long); \n" +
                         "define stream TestStream(symbol string); \n" +
                         "\n" +
                         "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
