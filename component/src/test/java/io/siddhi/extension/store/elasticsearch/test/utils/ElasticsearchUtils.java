@@ -1,4 +1,4 @@
-package org.wso2.extension.siddhi.store.elasticsearch.test.utils;
+package io.siddhi.extension.store.elasticsearch.test.utils;
 
 import org.apache.log4j.Logger;
 

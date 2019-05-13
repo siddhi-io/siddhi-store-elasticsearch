@@ -24,9 +24,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
-    <groupId>org.wso2.extension.siddhi.store.elasticsearch</groupId>
+    <groupId>io.siddhi.extension.store.elasticsearch</groupId>
     <artifactId>siddhi-store-elasticsearch-parent</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <name>Siddhi Extension - Elasticsearch Store</name>
     <profiles>
         <profile>
@@ -42,22 +42,22 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.wso2.siddhi</groupId>
+                <groupId>io.siddhi</groupId>
                 <artifactId>siddhi-core</artifactId>
                 <version>${siddhi.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.siddhi</groupId>
+                <groupId>io.siddhi</groupId>
                 <artifactId>siddhi-query-api</artifactId>
                 <version>${siddhi.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.siddhi</groupId>
+                <groupId>io.siddhi</groupId>
                 <artifactId>siddhi-annotations</artifactId>
                 <version>${siddhi.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.wso2.siddhi</groupId>
+                <groupId>io.siddhi</groupId>
                 <artifactId>siddhi-query-compiler</artifactId>
                 <version>${siddhi.version}</version>
             </dependency>
@@ -151,19 +151,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.wso2.siddhi</groupId>
-                <artifactId>siddhi-doc-gen</artifactId>
-                <version>${siddhi.version}</version>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>generate-md-docs</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
@@ -189,8 +176,8 @@
         </pluginManagement>
     </build>
     <properties>
-        <siddhi.version>4.4.8</siddhi.version>
-        <siddhi.version.range>(4.2.0,5.0.0)</siddhi.version.range>
+        <siddhi.version>5.0.0</siddhi.version>
+        <siddhi.version.range>(5.0.0,6.0.0)</siddhi.version.range>
         <testng.version>6.11</testng.version>
         <elasticsearch.version>7.0.0</elasticsearch.version>
         <elasticsearch.version.range>[7.0.0,8.0.0)</elasticsearch.version.range>
@@ -207,8 +194,8 @@
         <commons.logging.version.range>(1.2,2)</commons.logging.version.range>
         <log4j.version>1.2.17.wso2v1</log4j.version>
         <carbon.transport.version>4.4.15</carbon.transport.version>
-        <siddhi.map.json.version>4.0.29</siddhi.map.json.version>
-        <siddhi.map.xml.version>4.0.16</siddhi.map.xml.version>
+        <siddhi.map.json.version>5.0.2</siddhi.map.json.version>
+        <siddhi.map.xml.version>5.0.2</siddhi.map.xml.version>
         <jacoco.plugin.version>0.7.9</jacoco.plugin.version>
         <carbon.feature.plugin.version>3.0.0</carbon.feature.plugin.version>
         <io.fabric8.version>0.20.0</io.fabric8.version>

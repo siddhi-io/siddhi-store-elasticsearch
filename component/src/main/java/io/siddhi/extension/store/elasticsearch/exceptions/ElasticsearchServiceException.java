@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.extension.siddhi.store.elasticsearch.exceptions;
+package io.siddhi.extension.store.elasticsearch.exceptions;
 
 /**
  * This exception represents the Exception which might be thrown if there are any issues in the

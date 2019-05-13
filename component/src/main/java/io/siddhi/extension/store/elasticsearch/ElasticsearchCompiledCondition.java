@@ -16,20 +16,25 @@
  * under the License.
  */
 
-package org.wso2.extension.siddhi.store.elasticsearch.exceptions;
+package io.siddhi.extension.store.elasticsearch;
 
-import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
+import io.siddhi.core.util.collection.operator.CompiledCondition;
 
 /**
- * This class represents the exception class thrown from the
- * {@link org.wso2.extension.siddhi.store.elasticsearch.ElasticsearchConditionVisitor}
+ * This class represents the compiled condition specific to Elasticsearch record tables.
  */
-public class ElasticsearchConditionVisitorException extends SiddhiAppCreationException {
-    public ElasticsearchConditionVisitorException(String message) {
-        super(message);
+public class ElasticsearchCompiledCondition implements CompiledCondition {
+    private String compiledQuery;
+
+    public ElasticsearchCompiledCondition(String compiledQuery) {
+        this.compiledQuery = compiledQuery;
     }
 
-    public ElasticsearchConditionVisitorException(String message, Throwable e) {
-        super(message, e);
+    public String getCompiledQuery() {
+        return compiledQuery;
+    }
+
+    public String toString() {
+        return getCompiledQuery();
     }
 }

@@ -16,11 +16,11 @@
  * under the License.
  */
 
-package org.wso2.extension.siddhi.store.elasticsearch;
+package io.siddhi.extension.store.elasticsearch;
 
-import org.wso2.siddhi.core.table.record.BaseExpressionVisitor;
-import org.wso2.siddhi.query.api.definition.Attribute;
-import org.wso2.siddhi.query.api.expression.condition.Compare;
+import io.siddhi.core.table.record.BaseExpressionVisitor;
+import io.siddhi.query.api.definition.Attribute;
+import io.siddhi.query.api.expression.condition.Compare;
 
 /**
  * This class represents the Condition vistor implementation specific to Elasticsearch record tables.
