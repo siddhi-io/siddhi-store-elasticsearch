@@ -846,7 +846,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             XContentBuilder builder = XContentFactory.jsonBuilder();
             builder.startObject();
             {
-                builder.startObject(indexType);
                 {
                     builder.startObject(MAPPING_PROPERTIES_ELEMENT);
                     {
@@ -884,7 +883,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     }
                     builder.endObject();
                 }
-                builder.endObject();
             }
             builder.endObject();
             request.mapping(builder);
