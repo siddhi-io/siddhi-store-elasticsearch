@@ -898,7 +898,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             throw new ElasticsearchEventTableException("Error while creating indices for table id : '" +
                     tableDefinition.getId(), e);
         } catch (ElasticsearchStatusException e) {
-            logger.debug("Elasticsearch status exception occurs while creating index for table id: " +
+            logger.error("Elasticsearch status exception occurs while creating index for table id: " +
                     tableDefinition.getId(), e);
         }
     }
