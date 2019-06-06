@@ -846,41 +846,41 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             XContentBuilder builder = XContentFactory.jsonBuilder();
             builder.startObject();
             {
-                    builder.startObject(MAPPING_PROPERTIES_ELEMENT);
-                    {
-                        for (Attribute attribute : attributes) {
-                            builder.startObject(attribute.getName());
-                            {
-                                if (attribute.getType().equals(Attribute.Type.STRING)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "text");
-                                    builder.startObject("fields");
+                builder.startObject(MAPPING_PROPERTIES_ELEMENT);
+                {
+                    for (Attribute attribute : attributes) {
+                        builder.startObject(attribute.getName());
+                        {
+                            if (attribute.getType().equals(Attribute.Type.STRING)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "text");
+                                builder.startObject("fields");
+                                {
+                                    builder.startObject("keyword");
                                     {
-                                        builder.startObject("keyword");
-                                        {
-                                            builder.field("type", "keyword");
-                                            builder.field("ignore_above", 256);
-                                        }
-                                        builder.endObject();
+                                        builder.field("type", "keyword");
+                                        builder.field("ignore_above", 256);
                                     }
                                     builder.endObject();
-                                } else if (attribute.getType().equals(Attribute.Type.INT)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "integer");
-                                } else if (attribute.getType().equals(Attribute.Type.LONG)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "long");
-                                } else if (attribute.getType().equals(Attribute.Type.FLOAT)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "float");
-                                } else if (attribute.getType().equals(Attribute.Type.DOUBLE)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "double");
-                                } else if (attribute.getType().equals(Attribute.Type.BOOL)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "boolean");
-                                } else {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "object");
                                 }
+                                builder.endObject();
+                            } else if (attribute.getType().equals(Attribute.Type.INT)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "integer");
+                            } else if (attribute.getType().equals(Attribute.Type.LONG)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "long");
+                            } else if (attribute.getType().equals(Attribute.Type.FLOAT)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "float");
+                            } else if (attribute.getType().equals(Attribute.Type.DOUBLE)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "double");
+                            } else if (attribute.getType().equals(Attribute.Type.BOOL)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "boolean");
+                            } else {
+                                builder.field(MAPPING_TYPE_ELEMENT, "object");
                             }
-                            builder.endObject();
                         }
-                    builder.endObject();
+                        builder.endObject();
+                    }
                 }
+                builder.endObject();
             }
             builder.endObject();
             request.mapping(builder);
