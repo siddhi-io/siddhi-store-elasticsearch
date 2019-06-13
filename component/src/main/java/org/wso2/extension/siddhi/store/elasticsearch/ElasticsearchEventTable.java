@@ -492,7 +492,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                 listOfHostnames = storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST);
             }
 
-            List<Annotation> typeMappingsAnnotations = storeAnnotation.getAnnotations("TypeMappings");
+            List<Annotation> typeMappingsAnnotations = storeAnnotation.getAnnotations(ANNOTATION_TYPE_MAPPINGS);
             if (typeMappingsAnnotations.size() > 0) {
                 for (Element element : typeMappingsAnnotations.get(0).getElements()) {
                     validateTypeMappingAttribute(element.getKey());
@@ -910,7 +910,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             throw new ElasticsearchEventTableException("Error while creating indices for table id : '" +
                     tableDefinition.getId(), e);
         } catch (ElasticsearchStatusException e) {
-            logger.debug("Elasticsearch status exception occurs while creating index for table id: " +
+            logger.error("Elasticsearch status exception occurs while creating index for table id: " +
                     tableDefinition.getId(), e);
         }
     }
