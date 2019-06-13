@@ -47,6 +47,7 @@ public class ElasticsearchTableConstants {
     public static final String ANNOTATION_ELEMENT_TRUSRTSTORE_PASS = "trust.store.pass";
     public static final String ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME = "payload.index.of.index.name";
     public static final String ANNOTATION_ELEMENT_MEMBER_LIST = "elasticsearch.member.list";
+    public static final String ANNOTATION_TYPE_MAPPINGS = "TypeMappings";
 
     public static final String DEFAULT_HOSTNAME = "localhost";
     public static final String DEFAULT_INDEX_TYPE = "_doc";

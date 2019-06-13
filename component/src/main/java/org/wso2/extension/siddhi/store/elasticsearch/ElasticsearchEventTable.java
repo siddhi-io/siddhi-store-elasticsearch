@@ -53,6 +53,7 @@ import org.wso2.siddhi.annotation.Extension;
 import org.wso2.siddhi.annotation.Parameter;
 import org.wso2.siddhi.annotation.util.DataType;
 import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
+import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
 import org.wso2.siddhi.core.table.record.AbstractRecordTable;
 import org.wso2.siddhi.core.table.record.ExpressionBuilder;
 import org.wso2.siddhi.core.table.record.RecordIterator;
@@ -78,6 +79,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,6 +128,7 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_USER;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_TYPE_MAPPINGS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_BACKOFF_POLICY_RETRY_NO;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
@@ -330,7 +333,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private boolean sslEnabled = DEFAULT_SSL_ENABLED;
     private int payloadIndexOfIndexName = DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME;
     private String listOfHostnames;
-
+    private Map<String, String> typeMappings = new HashMap<>();
 
     /**
      * Initializing the Record Table
@@ -487,6 +490,14 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST))) {
                 listOfHostnames = storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST);
+            }
+
+            List<Annotation> typeMappingsAnnotations = storeAnnotation.getAnnotations("TypeMappings");
+            if (typeMappingsAnnotations.size() > 0) {
+                for (Element element : typeMappingsAnnotations.get(0).getElements()) {
+                    validateTypeMappingAttribute(element.getKey());
+                    typeMappings.put(element.getKey(), element.getValue());
+                }
             }
         } else {
             throw new ElasticsearchEventTableException("Elasticsearch Store annotation list null for table id : '" +
@@ -845,43 +856,41 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             XContentBuilder builder = XContentFactory.jsonBuilder();
             builder.startObject();
             {
-                builder.startObject(indexType);
+                builder.startObject(MAPPING_PROPERTIES_ELEMENT);
                 {
-                    builder.startObject(MAPPING_PROPERTIES_ELEMENT);
-                    {
-                        for (Attribute attribute : attributes) {
-                            builder.startObject(attribute.getName());
-                            {
-                                if (attribute.getType().equals(Attribute.Type.STRING)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "text");
-                                    builder.startObject("fields");
+                    for (Attribute attribute : attributes) {
+                        builder.startObject(attribute.getName());
+                        {
+                            if (typeMappings.containsKey(attribute.getName())) {
+                                builder.field(MAPPING_TYPE_ELEMENT, typeMappings.get(attribute.getName()));
+                            } else if (attribute.getType().equals(Attribute.Type.STRING)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "text");
+                                builder.startObject("fields");
+                                {
+                                    builder.startObject("keyword");
                                     {
-                                        builder.startObject("keyword");
-                                        {
-                                            builder.field("type", "keyword");
-                                            builder.field("ignore_above", 256);
-                                        }
-                                        builder.endObject();
+                                        builder.field("type", "keyword");
+                                        builder.field("ignore_above", 256);
                                     }
                                     builder.endObject();
-                                } else if (attribute.getType().equals(Attribute.Type.INT)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "integer");
-                                } else if (attribute.getType().equals(Attribute.Type.LONG)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "long");
-                                } else if (attribute.getType().equals(Attribute.Type.FLOAT)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "float");
-                                } else if (attribute.getType().equals(Attribute.Type.DOUBLE)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "double");
-                                } else if (attribute.getType().equals(Attribute.Type.BOOL)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "boolean");
-                                } else {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "object");
                                 }
+                                builder.endObject();
+                            } else if (attribute.getType().equals(Attribute.Type.INT)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "integer");
+                            } else if (attribute.getType().equals(Attribute.Type.LONG)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "long");
+                            } else if (attribute.getType().equals(Attribute.Type.FLOAT)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "float");
+                            } else if (attribute.getType().equals(Attribute.Type.DOUBLE)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "double");
+                            } else if (attribute.getType().equals(Attribute.Type.BOOL)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "boolean");
+                            } else {
+                                builder.field(MAPPING_TYPE_ELEMENT, "object");
                             }
-                            builder.endObject();
                         }
+                        builder.endObject();
                     }
-                    builder.endObject();
                 }
                 builder.endObject();
             }
@@ -903,6 +912,19 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         } catch (ElasticsearchStatusException e) {
             logger.debug("Elasticsearch status exception occurs while creating index for table id: " +
                     tableDefinition.getId(), e);
+        }
+    }
+
+    private void validateTypeMappingAttribute(String typeMappingAttributeName) {
+        boolean matchFound = false;
+        for (Attribute storeAttribute : attributes) {
+            if (storeAttribute.getName().equals(typeMappingAttributeName)) {
+                matchFound = true;
+            }
+        }
+        if (!matchFound) {
+            throw new SiddhiAppCreationException("Invalid attribute name '" + typeMappingAttributeName
+                    + "' found in " + ANNOTATION_TYPE_MAPPINGS + ". No such attribute found in Store definition.");
         }
     }
 }
