@@ -39,6 +39,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
@@ -53,6 +54,7 @@ import org.wso2.siddhi.annotation.Extension;
 import org.wso2.siddhi.annotation.Parameter;
 import org.wso2.siddhi.annotation.util.DataType;
 import org.wso2.siddhi.core.exception.ConnectionUnavailableException;
+import org.wso2.siddhi.core.exception.SiddhiAppCreationException;
 import org.wso2.siddhi.core.table.record.AbstractRecordTable;
 import org.wso2.siddhi.core.table.record.ExpressionBuilder;
 import org.wso2.siddhi.core.table.record.RecordIterator;
@@ -78,6 +80,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -106,8 +109,6 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_INDEX_TYPE;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_MEMBER_LIST;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_PASSWORD;
@@ -126,6 +127,7 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_USER;
+import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_TYPE_MAPPINGS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_BACKOFF_POLICY_RETRY_NO;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
@@ -136,7 +138,6 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
         DEFAULT_CONCURRENT_REQUESTS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_FLUSH_INTERVAL;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_HOSTNAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_INDEX_TYPE;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_IO_THREAD_COUNT;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_NUMBER_OF_REPLICAS;
@@ -194,9 +195,6 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                         description = "The name of the Elasticsearch index.",
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "The table name defined in the Siddhi App query."),
-                @Parameter(name = "index.type",
-                        description = "The the type of the index.",
-                        type = {DataType.STRING}, optional = true, defaultValue = "_doc"),
                 @Parameter(name = "payload.index.of.index.name",
                         description = "The payload which is used to create the index. This can be used if the user " +
                                 "needs to create index names dynamically",
@@ -308,7 +306,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private List<String> primaryKeys;
     private String hostname = DEFAULT_HOSTNAME;
     private String indexName;
-    private String indexType = DEFAULT_INDEX_TYPE;
     private String indexAlias;
     private int port = DEFAULT_PORT;
     private String scheme = DEFAULT_SCHEME;
@@ -330,7 +327,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private boolean sslEnabled = DEFAULT_SSL_ENABLED;
     private int payloadIndexOfIndexName = DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME;
     private String listOfHostnames;
-
+    private Map<String, String> typeMappings = new HashMap<>();
 
     /**
      * Initializing the Record Table
@@ -364,11 +361,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                 port = Integer.parseInt(storeAnnotation.getElement(ANNOTATION_ELEMENT_PORT));
             } else {
                 port = Integer.parseInt(configReader.readConfig(ANNOTATION_ELEMENT_HOSTNAME, String.valueOf(port)));
-            }
-            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE))) {
-               indexType = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE);
-            } else {
-               indexType = configReader.readConfig(ANNOTATION_ELEMENT_INDEX_TYPE, indexType);
             }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.
                     getElement(ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS))) {
@@ -487,6 +479,14 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST))) {
                 listOfHostnames = storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST);
+            }
+
+            List<Annotation> typeMappingsAnnotations = storeAnnotation.getAnnotations(ANNOTATION_TYPE_MAPPINGS);
+            if (typeMappingsAnnotations.size() > 0) {
+                for (Element element : typeMappingsAnnotations.get(0).getElements()) {
+                    validateTypeMappingAttribute(element.getKey());
+                    typeMappings.put(element.getKey(), element.getValue());
+                }
             }
         } else {
             throw new ElasticsearchEventTableException("Elasticsearch Store annotation list null for table id : '" +
@@ -649,7 +649,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             compiledCondition) throws ElasticsearchServiceException {
         String condition = ElasticsearchTableUtils.resolveCondition((ElasticsearchCompiledCondition) compiledCondition,
                 findConditionParameterMap);
-        return new ElasticsearchRecordIterator(indexName, indexType, condition, restHighLevelClient, attributes);
+        return new ElasticsearchRecordIterator(indexName, condition, restHighLevelClient, attributes);
     }
 
     /**.
@@ -836,6 +836,17 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     }
 
     private void createIndex() {
+        try {
+            if (restHighLevelClient.indices().exists(new GetIndexRequest(indexName), RequestOptions.DEFAULT)) {
+                logger.debug("Index: " + indexName + " has already being created for table id: " +
+                        tableDefinition.getId() + ".");
+                return;
+            }
+        } catch (IOException e) {
+            throw new ElasticsearchEventTableException("Error while checking indices for table id : '" +
+                    tableDefinition.getId(), e);
+        }
+
         CreateIndexRequest request = new CreateIndexRequest(indexName);
         request.settings(Settings.builder()
                 .put(SETTING_INDEX_NUMBER_OF_SHARDS, numberOfShards)
@@ -845,43 +856,41 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             XContentBuilder builder = XContentFactory.jsonBuilder();
             builder.startObject();
             {
-                builder.startObject(indexType);
+                builder.startObject(MAPPING_PROPERTIES_ELEMENT);
                 {
-                    builder.startObject(MAPPING_PROPERTIES_ELEMENT);
-                    {
-                        for (Attribute attribute : attributes) {
-                            builder.startObject(attribute.getName());
-                            {
-                                if (attribute.getType().equals(Attribute.Type.STRING)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "text");
-                                    builder.startObject("fields");
+                    for (Attribute attribute : attributes) {
+                        builder.startObject(attribute.getName());
+                        {
+                            if (typeMappings.containsKey(attribute.getName())) {
+                                builder.field(MAPPING_TYPE_ELEMENT, typeMappings.get(attribute.getName()));
+                            } else if (attribute.getType().equals(Attribute.Type.STRING)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "text");
+                                builder.startObject("fields");
+                                {
+                                    builder.startObject("keyword");
                                     {
-                                        builder.startObject("keyword");
-                                        {
-                                            builder.field("type", "keyword");
-                                            builder.field("ignore_above", 256);
-                                        }
-                                        builder.endObject();
+                                        builder.field("type", "keyword");
+                                        builder.field("ignore_above", 256);
                                     }
                                     builder.endObject();
-                                } else if (attribute.getType().equals(Attribute.Type.INT)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "integer");
-                                } else if (attribute.getType().equals(Attribute.Type.LONG)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "long");
-                                } else if (attribute.getType().equals(Attribute.Type.FLOAT)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "float");
-                                } else if (attribute.getType().equals(Attribute.Type.DOUBLE)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "double");
-                                } else if (attribute.getType().equals(Attribute.Type.BOOL)) {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "boolean");
-                                } else {
-                                    builder.field(MAPPING_TYPE_ELEMENT, "object");
                                 }
+                                builder.endObject();
+                            } else if (attribute.getType().equals(Attribute.Type.INT)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "integer");
+                            } else if (attribute.getType().equals(Attribute.Type.LONG)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "long");
+                            } else if (attribute.getType().equals(Attribute.Type.FLOAT)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "float");
+                            } else if (attribute.getType().equals(Attribute.Type.DOUBLE)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "double");
+                            } else if (attribute.getType().equals(Attribute.Type.BOOL)) {
+                                builder.field(MAPPING_TYPE_ELEMENT, "boolean");
+                            } else {
+                                builder.field(MAPPING_TYPE_ELEMENT, "object");
                             }
-                            builder.endObject();
                         }
+                        builder.endObject();
                     }
-                    builder.endObject();
                 }
                 builder.endObject();
             }
@@ -901,8 +910,21 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             throw new ElasticsearchEventTableException("Error while creating indices for table id : '" +
                     tableDefinition.getId(), e);
         } catch (ElasticsearchStatusException e) {
-            logger.debug("Elasticsearch status exception occurs while creating index for table id: " +
+            logger.error("Elasticsearch status exception occurred while creating index for table id: " +
                     tableDefinition.getId(), e);
+        }
+    }
+
+    private void validateTypeMappingAttribute(String typeMappingAttributeName) {
+        boolean matchFound = false;
+        for (Attribute storeAttribute : attributes) {
+            if (storeAttribute.getName().equals(typeMappingAttributeName)) {
+                matchFound = true;
+            }
+        }
+        if (!matchFound) {
+            throw new SiddhiAppCreationException("Invalid attribute name '" + typeMappingAttributeName
+                    + "' found in " + ANNOTATION_TYPE_MAPPINGS + ". No such attribute found in Store definition.");
         }
     }
 }
