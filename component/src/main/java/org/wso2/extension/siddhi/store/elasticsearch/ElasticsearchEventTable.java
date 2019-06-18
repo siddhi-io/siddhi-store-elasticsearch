@@ -109,8 +109,6 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_INDEX_TYPE;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_MEMBER_LIST;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_PASSWORD;
@@ -140,7 +138,6 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
         DEFAULT_CONCURRENT_REQUESTS;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_FLUSH_INTERVAL;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_HOSTNAME;
-import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_INDEX_TYPE;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_IO_THREAD_COUNT;
 import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_NUMBER_OF_REPLICAS;
@@ -198,9 +195,6 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                         description = "The name of the Elasticsearch index.",
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "The table name defined in the Siddhi App query."),
-                @Parameter(name = "index.type",
-                        description = "The the type of the index.",
-                        type = {DataType.STRING}, optional = true, defaultValue = "null"),
                 @Parameter(name = "payload.index.of.index.name",
                         description = "The payload which is used to create the index. This can be used if the user " +
                                 "needs to create index names dynamically",
@@ -312,7 +306,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private List<String> primaryKeys;
     private String hostname = DEFAULT_HOSTNAME;
     private String indexName;
-    private String indexType = DEFAULT_INDEX_TYPE;
     private String indexAlias;
     private int port = DEFAULT_PORT;
     private String scheme = DEFAULT_SCHEME;
@@ -369,7 +362,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             } else {
                 port = Integer.parseInt(configReader.readConfig(ANNOTATION_ELEMENT_HOSTNAME, String.valueOf(port)));
             }
-            indexType = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE);
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.
                     getElement(ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS))) {
                 numberOfShards = Integer.parseInt(storeAnnotation.getElement(
@@ -657,11 +649,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             compiledCondition) throws ElasticsearchServiceException {
         String condition = ElasticsearchTableUtils.resolveCondition((ElasticsearchCompiledCondition) compiledCondition,
                 findConditionParameterMap);
-        if (indexType != null) {
-            return new ElasticsearchRecordIterator(indexName, condition, restHighLevelClient, attributes);
-        } else {
-            return new ElasticsearchRecordIterator(indexName, indexType, condition, restHighLevelClient, attributes);
-        }
+        return new ElasticsearchRecordIterator(indexName, condition, restHighLevelClient, attributes);
     }
 
     /**.
@@ -868,9 +856,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             XContentBuilder builder = XContentFactory.jsonBuilder();
             builder.startObject();
             {
-                if (indexType != null) {
-                    builder.startObject(indexType);
-                }
                 builder.startObject(MAPPING_PROPERTIES_ELEMENT);
                 {
                     for (Attribute attribute : attributes) {
@@ -908,9 +893,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     }
                 }
                 builder.endObject();
-                if (indexType != null) {
-                    builder.endObject();
-                }
             }
             builder.endObject();
             request.mapping(builder);

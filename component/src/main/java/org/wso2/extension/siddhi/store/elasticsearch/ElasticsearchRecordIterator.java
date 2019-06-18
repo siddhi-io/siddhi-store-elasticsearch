@@ -44,25 +44,6 @@ public class ElasticsearchRecordIterator implements RecordIterator<Object[]> {
     private List<Attribute> attributes;
     private Iterator<SearchHit> elasticsearchHitsIterator;
 
-    public ElasticsearchRecordIterator(String indexName, String indexType, String queryString, 
-                                       RestHighLevelClient restHighLevelClient, List<Attribute> attributes)
-            throws ElasticsearchServiceException {
-        this.attributes = attributes;
-        QueryBuilder queryBuilder = getQueryBuilder(queryString);
-        SearchRequest searchRequest = new SearchRequest(indexName);
-        searchRequest.types(indexType);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.query(queryBuilder);
-        searchRequest.source(searchSourceBuilder);
-        try {
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-            elasticsearchHitsIterator = searchResponse.getHits().iterator();
-        } catch (IOException e) {
-            throw new ElasticsearchServiceException("Error while performing search the query: '" + queryString + "'",
-                    e);
-        }
-    }
-
     public ElasticsearchRecordIterator(String indexName, String queryString,
                                        RestHighLevelClient restHighLevelClient, List<Attribute> attributes)
             throws ElasticsearchServiceException {
