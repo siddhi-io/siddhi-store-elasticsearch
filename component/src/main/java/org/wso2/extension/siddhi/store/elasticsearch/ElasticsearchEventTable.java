@@ -200,7 +200,7 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                         defaultValue = "The table name defined in the Siddhi App query."),
                 @Parameter(name = "index.type",
                         description = "The the type of the index.",
-                        type = {DataType.STRING}, optional = true, defaultValue = "empty"),
+                        type = {DataType.STRING}, optional = true, defaultValue = "null"),
                 @Parameter(name = "payload.index.of.index.name",
                         description = "The payload which is used to create the index. This can be used if the user " +
                                 "needs to create index names dynamically",

@@ -1,4 +1,4 @@
-# API Docs - v2.0.0
+# API Docs - v2.1.0-SNAPSHOT
 
 ## Store
 
@@ -82,7 +82,7 @@
     <tr>
         <td style="vertical-align: top">index.type</td>
         <td style="vertical-align: top; word-wrap: break-word">The the type of the index.</td>
-        <td style="vertical-align: top">_doc</td>
+        <td style="vertical-align: top">empty</td>
         <td style="vertical-align: top">STRING</td>
         <td style="vertical-align: top">Yes</td>
         <td style="vertical-align: top">No</td>
