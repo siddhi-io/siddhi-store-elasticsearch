@@ -39,6 +39,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
@@ -199,7 +200,7 @@ import static org.wso2.extension.siddhi.store.elasticsearch.utils.ElasticsearchT
                         defaultValue = "The table name defined in the Siddhi App query."),
                 @Parameter(name = "index.type",
                         description = "The the type of the index.",
-                        type = {DataType.STRING}, optional = true, defaultValue = "_doc"),
+                        type = {DataType.STRING}, optional = true, defaultValue = "empty"),
                 @Parameter(name = "payload.index.of.index.name",
                         description = "The payload which is used to create the index. This can be used if the user " +
                                 "needs to create index names dynamically",
@@ -368,11 +369,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             } else {
                 port = Integer.parseInt(configReader.readConfig(ANNOTATION_ELEMENT_HOSTNAME, String.valueOf(port)));
             }
-            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE))) {
-               indexType = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE);
-            } else {
-               indexType = configReader.readConfig(ANNOTATION_ELEMENT_INDEX_TYPE, indexType);
-            }
+            indexType = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE);
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.
                     getElement(ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS))) {
                 numberOfShards = Integer.parseInt(storeAnnotation.getElement(
@@ -660,7 +657,11 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             compiledCondition) throws ElasticsearchServiceException {
         String condition = ElasticsearchTableUtils.resolveCondition((ElasticsearchCompiledCondition) compiledCondition,
                 findConditionParameterMap);
-        return new ElasticsearchRecordIterator(indexName, indexType, condition, restHighLevelClient, attributes);
+        if (indexType != null) {
+            return new ElasticsearchRecordIterator(indexName, condition, restHighLevelClient, attributes);
+        } else {
+            return new ElasticsearchRecordIterator(indexName, indexType, condition, restHighLevelClient, attributes);
+        }
     }
 
     /**.
@@ -847,6 +848,17 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     }
 
     private void createIndex() {
+        try {
+            if (restHighLevelClient.indices().exists(new GetIndexRequest(indexName), RequestOptions.DEFAULT)) {
+                logger.debug("Index: " + indexName + " has already being created for table id: " +
+                        tableDefinition.getId() + ".");
+                return;
+            }
+        } catch (IOException e) {
+            throw new ElasticsearchEventTableException("Error while checking indices for table id : '" +
+                    tableDefinition.getId(), e);
+        }
+
         CreateIndexRequest request = new CreateIndexRequest(indexName);
         request.settings(Settings.builder()
                 .put(SETTING_INDEX_NUMBER_OF_SHARDS, numberOfShards)
@@ -856,6 +868,9 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             XContentBuilder builder = XContentFactory.jsonBuilder();
             builder.startObject();
             {
+                if (indexType != null) {
+                    builder.startObject(indexType);
+                }
                 builder.startObject(MAPPING_PROPERTIES_ELEMENT);
                 {
                     for (Attribute attribute : attributes) {
@@ -893,6 +908,9 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     }
                 }
                 builder.endObject();
+                if (indexType != null) {
+                    builder.endObject();
+                }
             }
             builder.endObject();
             request.mapping(builder);
@@ -910,7 +928,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             throw new ElasticsearchEventTableException("Error while creating indices for table id : '" +
                     tableDefinition.getId(), e);
         } catch (ElasticsearchStatusException e) {
-            logger.error("Elasticsearch status exception occurs while creating index for table id: " +
+            logger.error("Elasticsearch status exception occurred while creating index for table id: " +
                     tableDefinition.getId(), e);
         }
     }
