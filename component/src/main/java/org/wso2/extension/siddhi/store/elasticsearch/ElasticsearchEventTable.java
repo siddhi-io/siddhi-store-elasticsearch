@@ -351,7 +351,17 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         }
         if (storeAnnotation != null) {
             indexName = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_NAME);
-            indexName = ElasticsearchTableUtils.isEmpty(indexName) ? tableDefinition.getId() : indexName;
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(
+                    ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME))) {
+                payloadIndexOfIndexName = Integer.parseInt(
+                        storeAnnotation.getElement(ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME));
+            } else {
+                payloadIndexOfIndexName = Integer.parseInt(
+                        configReader.readConfig(ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME,
+                                String.valueOf(payloadIndexOfIndexName)));
+            }
+            indexName = ElasticsearchTableUtils.isEmpty(indexName) &&
+                    payloadIndexOfIndexName == -1 ? tableDefinition.getId() : indexName;
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_HOSTNAME))) {
                 hostname = storeAnnotation.getElement(ANNOTATION_ELEMENT_HOSTNAME);
             } else {
@@ -468,15 +478,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             } else {
                 trustStoreType = configReader.readConfig(ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE, trustStoreType);
             }
-            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(
-                    ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME))) {
-                payloadIndexOfIndexName = Integer.parseInt(
-                        storeAnnotation.getElement(ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME));
-            } else {
-                payloadIndexOfIndexName = Integer.parseInt(
-                        configReader.readConfig(ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME,
-                                String.valueOf(payloadIndexOfIndexName)));
-            }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST))) {
                 listOfHostnames = storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST);
             }
@@ -564,7 +565,9 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         bulkProcessorBuilder.setBackoffPolicy(BackoffPolicy.constantBackoff(
                 TimeValue.timeValueSeconds(backoffPolicyWaitTime), backoffPolicyRetryNo));
         bulkProcessor = bulkProcessorBuilder.build();
-        createIndex();
+        if (indexName != null && !indexName.isEmpty()) {
+            createIndex();
+        }
     }
 
     static class BulkProcessorListener implements BulkProcessor.Listener {
@@ -600,7 +603,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     protected void add(List<Object[]> records) throws ConnectionUnavailableException {
         for (Object[] record : records) {
             if (payloadIndexOfIndexName != -1 &&
-                    !indexName.equalsIgnoreCase((String) record[payloadIndexOfIndexName])) {
+                    (indexName == null || !indexName.equalsIgnoreCase((String) record[payloadIndexOfIndexName]))) {
                 indexName = (String) record[payloadIndexOfIndexName];
                 createIndex();
             }
