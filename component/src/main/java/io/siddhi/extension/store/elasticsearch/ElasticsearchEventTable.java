@@ -23,6 +23,7 @@ import io.siddhi.annotation.Extension;
 import io.siddhi.annotation.Parameter;
 import io.siddhi.annotation.util.DataType;
 import io.siddhi.core.exception.ConnectionUnavailableException;
+import io.siddhi.core.exception.SiddhiAppCreationException;
 import io.siddhi.core.table.record.AbstractRecordTable;
 import io.siddhi.core.table.record.ExpressionBuilder;
 import io.siddhi.core.table.record.RecordIterator;
@@ -60,6 +61,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
@@ -79,6 +81,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -107,8 +110,6 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_INDEX_TYPE;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_MEMBER_LIST;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_PASSWORD;
@@ -127,6 +128,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_USER;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_TYPE_MAPPINGS;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_BACKOFF_POLICY_RETRY_NO;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
@@ -137,7 +139,6 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
         DEFAULT_CONCURRENT_REQUESTS;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_FLUSH_INTERVAL;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_HOSTNAME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_INDEX_TYPE;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_IO_THREAD_COUNT;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_NUMBER_OF_REPLICAS;
@@ -195,9 +196,6 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                         description = "The name of the Elasticsearch index.",
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "The table name defined in the Siddhi App query."),
-                @Parameter(name = "index.type",
-                        description = "The the type of the index.",
-                        type = {DataType.STRING}, optional = true, defaultValue = "_doc"),
                 @Parameter(name = "payload.index.of.index.name",
                         description = "The payload which is used to create the index. This can be used if the user " +
                                 "needs to create index names dynamically",
@@ -309,7 +307,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private List<String> primaryKeys;
     private String hostname = DEFAULT_HOSTNAME;
     private String indexName;
-    private String indexType = DEFAULT_INDEX_TYPE;
     private String indexAlias;
     private int port = DEFAULT_PORT;
     private String scheme = DEFAULT_SCHEME;
@@ -331,7 +328,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private boolean sslEnabled = DEFAULT_SSL_ENABLED;
     private int payloadIndexOfIndexName = DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME;
     private String listOfHostnames;
-
+    private Map<String, String> typeMappings = new HashMap<>();
 
     /**
      * Initializing the Record Table
@@ -355,7 +352,17 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         }
         if (storeAnnotation != null) {
             indexName = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_NAME);
-            indexName = ElasticsearchTableUtils.isEmpty(indexName) ? tableDefinition.getId() : indexName;
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(
+                    ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME))) {
+                payloadIndexOfIndexName = Integer.parseInt(
+                        storeAnnotation.getElement(ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME));
+            } else {
+                payloadIndexOfIndexName = Integer.parseInt(
+                        configReader.readConfig(ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME,
+                                String.valueOf(payloadIndexOfIndexName)));
+            }
+            indexName = ElasticsearchTableUtils.isEmpty(indexName) &&
+                    payloadIndexOfIndexName == -1 ? tableDefinition.getId() : indexName;
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_HOSTNAME))) {
                 hostname = storeAnnotation.getElement(ANNOTATION_ELEMENT_HOSTNAME);
             } else {
@@ -365,11 +372,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                 port = Integer.parseInt(storeAnnotation.getElement(ANNOTATION_ELEMENT_PORT));
             } else {
                 port = Integer.parseInt(configReader.readConfig(ANNOTATION_ELEMENT_HOSTNAME, String.valueOf(port)));
-            }
-            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE))) {
-                indexType = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE);
-            } else {
-                indexType = configReader.readConfig(ANNOTATION_ELEMENT_INDEX_TYPE, indexType);
             }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.
                     getElement(ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS))) {
@@ -477,17 +479,16 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             } else {
                 trustStoreType = configReader.readConfig(ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE, trustStoreType);
             }
-            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(
-                    ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME))) {
-                payloadIndexOfIndexName = Integer.parseInt(
-                        storeAnnotation.getElement(ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME));
-            } else {
-                payloadIndexOfIndexName = Integer.parseInt(
-                        configReader.readConfig(ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME,
-                                String.valueOf(payloadIndexOfIndexName)));
-            }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST))) {
                 listOfHostnames = storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST);
+            }
+
+            List<Annotation> typeMappingsAnnotations = storeAnnotation.getAnnotations(ANNOTATION_TYPE_MAPPINGS);
+            if (typeMappingsAnnotations.size() > 0) {
+                for (Element element : typeMappingsAnnotations.get(0).getElements()) {
+                    validateTypeMappingAttribute(element.getKey());
+                    typeMappings.put(element.getKey(), element.getValue());
+                }
             }
         } else {
             throw new ElasticsearchEventTableException("Elasticsearch Store annotation list null for table id : '" +
@@ -565,7 +566,9 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         bulkProcessorBuilder.setBackoffPolicy(BackoffPolicy.constantBackoff(
                 TimeValue.timeValueSeconds(backoffPolicyWaitTime), backoffPolicyRetryNo));
         bulkProcessor = bulkProcessorBuilder.build();
-        createIndex();
+        if (indexName != null && !indexName.isEmpty()) {
+            createIndex();
+        }
     }
 
     static class BulkProcessorListener implements BulkProcessor.Listener {
@@ -601,7 +604,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     protected void add(List<Object[]> records) throws ConnectionUnavailableException {
         for (Object[] record : records) {
             if (payloadIndexOfIndexName != -1 &&
-                    !indexName.equalsIgnoreCase((String) record[payloadIndexOfIndexName])) {
+                    (indexName == null || !indexName.equalsIgnoreCase((String) record[payloadIndexOfIndexName]))) {
                 indexName = (String) record[payloadIndexOfIndexName];
                 createIndex();
             }
@@ -650,10 +653,11 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             compiledCondition) throws ElasticsearchServiceException {
         String condition = ElasticsearchTableUtils.resolveCondition((ElasticsearchCompiledCondition) compiledCondition,
                 findConditionParameterMap);
-        return new ElasticsearchRecordIterator(indexName, indexType, condition, restHighLevelClient, attributes);
+        return new ElasticsearchRecordIterator(indexName, condition, restHighLevelClient, attributes);
     }
 
-    /**.
+    /**
+     * .
      * Check if matching record exist or not
      *
      * @param containsConditionParameterMap map of matching StreamVariable Ids and their values corresponding to the
@@ -837,6 +841,17 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     }
 
     private void createIndex() {
+        try {
+            if (restHighLevelClient.indices().exists(new GetIndexRequest(indexName), RequestOptions.DEFAULT)) {
+                logger.debug("Index: " + indexName + " has already being created for table id: " +
+                        tableDefinition.getId() + ".");
+                return;
+            }
+        } catch (IOException e) {
+            throw new ElasticsearchEventTableException("Error while checking indices for table id : '" +
+                    tableDefinition.getId(), e);
+        }
+
         CreateIndexRequest request = new CreateIndexRequest(indexName);
         request.settings(Settings.builder()
                 .put(SETTING_INDEX_NUMBER_OF_SHARDS, numberOfShards)
@@ -851,7 +866,9 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     for (Attribute attribute : attributes) {
                         builder.startObject(attribute.getName());
                         {
-                            if (attribute.getType().equals(Attribute.Type.STRING)) {
+                            if (typeMappings.containsKey(attribute.getName())) {
+                                builder.field(MAPPING_TYPE_ELEMENT, typeMappings.get(attribute.getName()));
+                            } else if (attribute.getType().equals(Attribute.Type.STRING)) {
                                 builder.field(MAPPING_TYPE_ELEMENT, "text");
                                 builder.startObject("fields");
                                 {
@@ -898,8 +915,21 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             throw new ElasticsearchEventTableException("Error while creating indices for table id : '" +
                     tableDefinition.getId(), e);
         } catch (ElasticsearchStatusException e) {
-            logger.error("Elasticsearch status exception occurs while creating index for table id: " +
+            logger.error("Elasticsearch status exception occurred while creating index for table id: " +
                     tableDefinition.getId(), e);
+        }
+    }
+
+    private void validateTypeMappingAttribute(String typeMappingAttributeName) {
+        boolean matchFound = false;
+        for (Attribute storeAttribute : attributes) {
+            if (storeAttribute.getName().equals(typeMappingAttributeName)) {
+                matchFound = true;
+            }
+        }
+        if (!matchFound) {
+            throw new SiddhiAppCreationException("Invalid attribute name '" + typeMappingAttributeName
+                    + "' found in " + ANNOTATION_TYPE_MAPPINGS + ". No such attribute found in Store definition.");
         }
     }
 }
