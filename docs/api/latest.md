@@ -1,8 +1,8 @@
-# API Docs - v3.0.0
+# API Docs - v3.0.1-SNAPSHOT
 
 ## Store
 
-### elasticsearch *<a target="_blank" href="http://siddhi.io/documentation/siddhi-5.x/query-guide-5.x/#store">(Store)</a>*
+### elasticsearch *<a target="_blank" href="https://siddhi.io/en/v5.0/docs/query-guide/#store">(Store)</a>*
 
 <p style="word-wrap: break-word">Elasticsearch store implementation uses Elasticsearch indexing document for underlying data storage. The events are converted to Elasticsearch index documents when the events are inserted into the elasticsearch store. Elasticsearch indexing documents are converted to events when the documents are read from Elasticsearch indexes. The internal store is connected to the Elastisearch server via the Elasticsearch Java High Level REST Client library.</p>
 
