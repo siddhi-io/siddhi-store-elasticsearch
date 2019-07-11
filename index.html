@@ -655,15 +655,14 @@
 <li>Elasticsearch can be downloaded directly from href="https://www.elastic.co/downloads/elasticsearch" in zip, tar.gz, deb, or rpm packages. </li>
 <li>
 <p>Then install the version 6.2.4, usual Ubuntu way with dpkg.</p>
-<p><code>bash
-    sudo apt-get update
+<p><code>sudo apt-get update
     wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/6.2.4/elasticsearch-6.2.4.deb
     sudo dpkg -i elasticsearch-6.2.4.deb</code></p>
 </li>
 </ul>
 <p><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-elasticsearch-on-ubuntu-16-04">How To Install and Configure Elasticsearch on Ubuntu 16.04</a>
  - Also you can start the Elasticsearch server using docker image:</p>
-<pre><code>```bash
+<pre><code>```
     docker run -p 9600:9200 -p 9700:9300 -e "discovery.type=single-node" -e ELASTIC_PASSWORD=MagicWord -d docker.elastic.co/elasticsearch/elasticsearch:6.2.4
 ```
 </code></pre>
