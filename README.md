@@ -1,85 +1,61 @@
-Siddhi-store-elasticsearch
-======================================
+Siddhi Store Elasticsearch
+=============================
 
-The **siddhi-store-elasticsearch extension** is an extension for siddhi Elasticsearch event table implementation. This extension can be used to persist events to a
-Elasticsearch server instance of version 6.x.x.
+  [![Jenkins Build Status](https://wso2.org/jenkins/job/siddhi/job/siddhi-store-elasticsearch/badge/icon)](https://wso2.org/jenkins/job/siddhi/job/siddhi-store-elasticsearch/)
+  [![GitHub Release](https://img.shields.io/github/release/siddhi-io/siddhi-store-elasticsearch.svg)](https://github.com/siddhi-io/siddhi-store-elasticsearch/releases)
+  [![GitHub Release Date](https://img.shields.io/github/release-date/siddhi-io/siddhi-store-elasticsearch.svg)](https://github.com/siddhi-io/siddhi-store-elasticsearch/releases)
+  [![GitHub Open Issues](https://img.shields.io/github/issues-raw/siddhi-io/siddhi-store-elasticsearch.svg)](https://github.com/siddhi-io/siddhi-store-elasticsearch/issues)
+  [![GitHub Last Commit](https://img.shields.io/github/last-commit/siddhi-io/siddhi-store-elasticsearch.svg)](https://github.com/siddhi-io/siddhi-store-elasticsearch/commits/master)
+  [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Find some useful links below:
+The **siddhi-store-elasticsearch extension** is an extension to <a target="_blank" href="https://wso2.github.io/siddhi">Siddhi</a> that persists and retrieve events to/from Elasticsearch
 
-* <a target="_blank" href="https://github.com/wso2-extensions/siddhi-store-elasticsearch">Source code</a>
-* <a target="_blank" href="https://github.com/wso2-extensions/siddhi-store-elasticsearch/releases">Releases</a>
-* <a target="_blank" href="https://github.com/wso2-extensions/siddhi-store-elasticsearch/issues">Issue tracker</a>
+For information on <a target="_blank" href="https://siddhi.io/">Siddhi</a> and it's features refer <a target="_blank" href="https://siddhi.io/redirect/docs.html">Siddhi Documentation</a>. 
+
+## Download
+
+* Versions 3.x and above with group id `io.siddhi.extension.*` from <a target="_blank" href="https://mvnrepository.com/artifact/io.siddhi.extension.store.elasticsearch/siddhi-store-elasticsearch/">here</a>. This supports elastic search 7.x.x version and above.
+* Versions 2.x and above with group id `io.siddhi.extension.*` from <a target="_blank" href="https://mvnrepository.com/artifact/io.siddhi.extension.store.elasticsearch/siddhi-store-elasticsearch/">here</a>. This supports elastic search 6.x.x version.
+* Versions 1.x and lower with group id `org.wso2.extension.siddhi.*` from <a target="_blank" href="https://mvnrepository.com/artifact/org.wso2.extension.siddhi.store.elasticsearch/siddhi-store-elasticsearch">here</a>. This supports elastic search 6.x.x version.
 
 ## Latest API Docs 
 
-Latest API Docs is <a target="_blank" href="https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/3.0.0">3.0.0</a>.
+Latest API Docs is <a target="_blank" href="https://siddhi-io.github.io/siddhi-store-elasticsearch/api/3.0.0">3.0.0</a>.
+
+## Features
+
+* <a target="_blank" href="https://siddhi-io.github.io/siddhi-store-elasticsearch/api/3.0.0/#elasticsearch-store">elasticsearch</a> *<a target="_blank" href="https://siddhi.io/en/v5.0/docs/query-guide/#store">(Store)</a>*<br><div style="padding-left: 1em;"><p>Elasticsearch store implementation uses Elasticsearch indexing document for underlying data storage. The events are converted to Elasticsearch index documents when the events are inserted into the elasticsearch store. Elasticsearch indexing documents are converted to events when the documents are read from Elasticsearch indexes. The internal store is connected to the Elastisearch server via the Elasticsearch Java High Level REST Client library.</p></div>
 
 ## Prerequisites
  - Elasticsearch can be downloaded directly from href="https://www.elastic.co/downloads/elasticsearch" in zip, tar.gz, deb, or rpm packages. 
  - Then install the version 6.2.4, usual Ubuntu way with dpkg.
-   ```
-   sudo apt-get update
-   wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/6.2.4/elasticsearch-6.2.4.deb
-   sudo dpkg -i elasticsearch-6.2.4.deb
-   ```
+   
+```
+     sudo apt-get update
+     wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/6.2.4/elasticsearch-6.2.4.deb
+     sudo dpkg -i elasticsearch-6.2.4.deb
+```
+   
    <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-elasticsearch-on-ubuntu-16-04">How To Install and Configure Elasticsearch on Ubuntu 16.04</a>
  - Also you can start the Elasticsearch server using docker image:
-   ```
-   docker run -p 9600:9200 -p 9700:9300 -e "discovery.type=single-node" -e ELASTIC_PASSWORD=MagicWord -d docker.elastic.co/elasticsearch/elasticsearch:6.2.4
-   ```
- 
-## How to use 
-
-**Using the extension in <a target="_blank" href="https://github.com/wso2/product-sp">WSO2 Stream Processor</a>**
-
-* You can use this extension in the latest <a target="_blank" href="https://github.com/wso2/product-sp/releases">WSO2 Stream Processor</a> that is a part of <a target="_blank" href="http://wso2.com/analytics?utm_source=gitanalytics&utm_campaign=gitanalytics_Jul17">WSO2 Analytics</a> offering, with editor, debugger and simulation support. 
-
-* This extension is shipped by default with WSO2 Stream Processor, if you wish to use an alternative version of this extension you can replace the component <a target="_blank" href="https://github.com/wso2-extensions/siddhi-store-elasticsearch/releases">jar</a> that can be found in the `<STREAM_PROCESSOR_HOME>/lib` directory.
-
-**Using the extension as a <a target="_blank" href="https://wso2.github.io/siddhi/documentation/running-as-a-java-library">java library</a>**
-
-* This extension can be added as a maven dependency along with other Siddhi dependencies to your project.
-
+   
 ```
-     <dependency>
-        <groupId>io.siddhi.extension.store.elasticsearch</groupId>
-        <artifactId>siddhi-store-elasticsearch</artifactId>
-        <version><version>x.x.x</version></version>
-     </dependency>
+     docker run -p 9600:9200 -p 9700:9300 -e "discovery.type=single-node" -e ELASTIC_PASSWORD=MagicWord -d docker.elastic.co/elasticsearch/elasticsearch:6.2.4
 ```
+   
+## Dependencies 
 
-## Jenkins Build Status
+There are no other dependencies needed for this extension. 
 
----
+## Installation
 
-|  Branch | Build Status |
-| :------ |:------------ | 
-| master  | [![Build Status](https://wso2.org/jenkins/job/siddhi/job/siddhi-store-elasticsearch/badge/icon)](https://wso2.org/jenkins/job/siddhi/job/siddhi-store-elasticsearch/) |
+For installing this extension on various siddhi execution environments refer Siddhi documentation section on <a target="_blank" href="https://siddhi.io/redirect/add-extensions.html">adding extensions</a>.
 
----
+## Support and Contribution
 
-## Features
+* We encourage users to ask questions and get support via <a target="_blank" href="https://stackoverflow.com/questions/tagged/siddhi">StackOverflow</a>, make sure to add the `siddhi` tag to the issue for better response.
 
-* <a target="_blank" href="https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/3.0.0/#elasticsearch-store">elasticsearch</a> *<a target="_blank" href="http://siddhi.io/documentation/siddhi-5.x/query-guide-5.x/#store">(Store)</a>*<br><div style="padding-left: 1em;"><p>Elasticsearch store implementation uses Elasticsearch indexing document for underlying data storage. The events are converted to Elasticsearch index documents when the events are inserted into the elasticsearch store. Elasticsearch indexing documents are converted to events when the documents are read from Elasticsearch indexes. The internal store is connected to the Elastisearch server via the Elasticsearch Java High Level REST Client library.</p></div>
+* If you find any issues related to the extension please report them on <a target="_blank" href="https://github.com/siddhi-io/siddhi-execution-string/issues">the issue tracker</a>.
 
-## How to Contribute
- 
-  * Please report issues at <a target="_blank" href="https://github.com/wso2-extensions/siddhi-store-elasticsearch/issues">GitHub Issue Tracker</a>.
-  
-  * Send your contributions as pull requests to <a target="_blank" href="https://github.com/wso2-extensions/siddhi-store-elasticsearch/tree/master">master branch</a>. 
- 
-## Contact us 
+* For production support and other contribution related information refer <a target="_blank" href="https://siddhi.io/community/">Siddhi Community</a> documentation.
 
- * Post your questions with the <a target="_blank" href="http://stackoverflow.com/search?q=siddhi">"Siddhi"</a> tag in <a target="_blank" href="http://stackoverflow.com/search?q=siddhi">Stackoverflow</a>. 
- 
- * Siddhi developers can be contacted via the mailing lists:
- 
-    Developers List   : [dev@wso2.org](mailto:dev@wso2.org)
-    
-    Architecture List : [architecture@wso2.org](mailto:architecture@wso2.org)
- 
-## Support 
-
-* We are committed to ensuring support for this extension in production. Our unique approach ensures that all support leverages our open development methodology and is provided by the very same engineers who build the technology. 
-
-* For more details and to take advantage of this unique opportunity contact us via <a target="_blank" href="http://wso2.com/support?utm_source=gitanalytics&utm_campaign=gitanalytics_Jul17">http://wso2.com/support/</a>. 

@@ -299,7 +299,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
         }
 )
 
-// for more information refer https://wso2.github.io/siddhi/documentation/siddhi-4.0/#event-table-types
+// for more information refer https://siddhi.io/en/v4.x/docs/query-guide/#event-table-types
 
 public class ElasticsearchEventTable extends AbstractRecordTable {
 
