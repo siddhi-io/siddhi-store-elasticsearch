@@ -2,7 +2,7 @@
 
 
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" class="no-js">
   <head>
     
@@ -13,10 +13,6 @@
         <meta name="description" content="Siddhi Store Elasticsearch Extension">
       
       
-        <link rel="canonical" href="https://wso2-extensions.github.io/siddhi-store-elasticsearch/api/2.0.0/">
-      
-      
-        <meta name="author" content="WSO2">
       
       
         <meta name="lang:clipboard.copy" content="Copy to clipboard">
@@ -38,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../../images/favicon.ico">
-      <meta name="generator" content="mkdocs-0.17.4, mkdocs-material-2.9.2">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
     
     
       
@@ -46,9 +42,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/application.ba0fd1a6.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/application.0284f74d.css">
       
-        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.6079476c.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/application-palette.01803549.css">
       
       
         
@@ -57,18 +53,47 @@
       
     
     
-      <script src="../../assets/javascripts/modernizr.1aa3b519.js"></script>
+      <script src="../../assets/javascripts/modernizr.74668098.js"></script>
     
     
-      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
       
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
     
     <link rel="stylesheet" href="../../assets/fonts/material-icons.css">
     
-      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/extra.css">
+    
+    
+      
+        
+<script>
+  window.ga = window.ga || function() {
+    (ga.q = ga.q || []).push(arguments)
+  }
+  ga.l = +new Date
+  /* Setup integration and send page view */
+  ga("create", "UA-103065-28", "auto")
+  ga("set", "anonymizeIp", true)
+  ga("send", "pageview")
+  /* Register handler to log search on blur */
+  document.addEventListener("DOMContentLoaded", () => {
+    if (document.forms.search) {
+      var query = document.forms.search.query
+      query.addEventListener("blur", function() {
+        if (this.value) {
+          var path = document.location.pathname;
+          ga("send", "pageview", path + "?q=" + this.value)
+        }
+      })
+    }
+  })
+</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
     
     
   </head>
@@ -81,24 +106,7 @@
       <defs>
         
         
-          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448"
-    viewBox="0 0 416 448" id="__github">
-  <path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19-18.125
-        8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19 18.125-8.5
-        18.125 8.5 10.75 19 3.125 20.5zM320 304q0 10-3.125 20.5t-10.75
-        19-18.125 8.5-18.125-8.5-10.75-19-3.125-20.5 3.125-20.5 10.75-19
-        18.125-8.5 18.125 8.5 10.75 19 3.125 20.5zM360
-        304q0-30-17.25-51t-46.75-21q-10.25 0-48.75 5.25-17.75 2.75-39.25
-        2.75t-39.25-2.75q-38-5.25-48.75-5.25-29.5 0-46.75 21t-17.25 51q0 22 8
-        38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0
-        37.25-1.75t35-7.375 30.5-15 20.25-25.75 8-38.375zM416 260q0 51.75-15.25
-        82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5-41.75
-        1.125q-19.5 0-35.5-0.75t-36.875-3.125-38.125-7.5-34.25-12.875-30.25-20.25-21.5-28.75q-15.5-30.75-15.5-82.75
-        0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25
-        30.875q36.75-8.75 77.25-8.75 37 0 70 8 26.25-20.5
-        46.75-30.25t47.25-9.75q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34
-        99.5z" />
-</svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
         
       </defs>
     </svg>
@@ -115,9 +123,9 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="https://wso2-extensions.github.io/siddhi-store-elasticsearch/" title="Siddhi Store Elasticsearch" class="md-header-nav__button md-logo">
+        <a href="../.." title="Siddhi Store Elasticsearch" class="md-header-nav__button md-logo">
           
-            <img src="../../images/siddhi-logo-w.svg" width="24" height="24">
+            <img src="../../images/siddhi-logo.svg" width="24" height="24">
           
         </a>
       </div>
@@ -127,22 +135,21 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
-            
-              <span class="md-header-nav__topic">
-                Siddhi Store Elasticsearch
-              </span>
-              <span class="md-header-nav__topic">
+            <span class="md-header-nav__topic">
+              Siddhi Store Elasticsearch
+            </span>
+            <span class="md-header-nav__topic">
+              
                 2.0.0
-              </span>
-            
+              
+            </span>
           
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
         
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
           
-            <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
-            
 <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
@@ -165,7 +172,6 @@
     </div>
   </div>
 </div>
-          
         
       </div>
       
@@ -176,20 +182,18 @@
 
   
 
-
-  <a href="https://github.com/wso2-extensions/siddhi-store-elasticsearch/" title="Go to repository" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      Siddhi-Store-Elasticsearch
+<a href="https://github.com/siddhi-io/siddhi-store-elasticsearch/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    Siddhi Store Elasticsearch
+  </div>
+</a>
           </div>
         </div>
       
@@ -211,11 +215,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <span class="md-nav__button md-logo">
+    <a href="../.." title="Siddhi Store Elasticsearch" class="md-nav__button md-logo">
       
-        <img src="../../images/siddhi-logo-w.svg" width="48" height="48">
+        <img src="../../images/siddhi-logo.svg" width="48" height="48">
       
-    </span>
+    </a>
     Siddhi Store Elasticsearch
   </label>
   
@@ -225,20 +229,18 @@
 
   
 
-
-  <a href="https://github.com/wso2-extensions/siddhi-store-elasticsearch/" title="Go to repository" class="md-source" data-md-source="github">
-    
-      <div class="md-source__icon">
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <use xlink:href="#__github" width="24" height="24"></use>
-        </svg>
-      </div>
-    
-    <div class="md-source__repository">
-      Siddhi-Store-Elasticsearch
+<a href="https://github.com/siddhi-io/siddhi-store-elasticsearch/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
     </div>
-  </a>
-
+  
+  <div class="md-source__repository">
+    Siddhi Store Elasticsearch
+  </div>
+</a>
     </div>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -249,8 +251,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../.." title="Welcome" class="md-nav__link">
-      Welcome
+    <a href="../.." title="Information" class="md-nav__link">
+      Information
     </a>
   </li>
 
@@ -275,6 +277,30 @@
       </label>
       <ul class="md-nav__list" data-md-scrollfix>
         
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../latest/" title="latest" class="md-nav__link">
+      latest
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../3.0.0/" title="3.0.0" class="md-nav__link">
+      3.0.0
+    </a>
+  </li>
+
         
           
           
@@ -471,18 +497,6 @@
   </li>
 
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="../latest/" title="latest" class="md-nav__link">
-      latest
-    </a>
-  </li>
-
-        
       </ul>
     </nav>
   </li>
@@ -494,7 +508,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../about/license/" title="License" class="md-nav__link">
+    <a href="../../license/" title="License" class="md-nav__link">
       License
     </a>
   </li>
@@ -556,20 +570,19 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/wso2-extensions/siddhi-store-elasticsearch/edit/master/docs/api/2.0.0.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/siddhi-io/siddhi-store-elasticsearch/blob/master/api/2.0.0.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="api-docs-v200">API Docs - v2.0.0<a class="headerlink" href="#api-docs-v200" title="Permanent link">&para;</a></h1>
-<h2 id="store">Store<a class="headerlink" href="#store" title="Permanent link">&para;</a></h2>
-<h3 id="elasticsearch-store">elasticsearch <em><a target="_blank" href="https://wso2.github.io/siddhi/documentation/siddhi-4.0/#store">(Store)</a></em><a class="headerlink" href="#elasticsearch-store" title="Permanent link">&para;</a></h3>
+                <h1 id="api-docs-v200">API Docs - v2.0.0</h1>
+<h2 id="store">Store</h2>
+<h3 id="elasticsearch-store">elasticsearch <em><a target="_blank" href="https://siddhi.io/en/v4.x/docs/query-guide/#store">(Store)</a></em></h3>
 <p style="word-wrap: break-word">Elasticsearch store implementation uses Elasticsearch indexing document for underlying data storage. The events are converted to Elasticsearch index documents when the events are inserted into the elasticsearch store. Elasticsearch indexing documents are converted to events when the documents are read from Elasticsearch indexes. The internal store is connected to the Elastisearch server via the Elasticsearch Java High Level REST Client library.</p>
 
 <p><span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span></p>
-<div class="codehilite"><pre><span></span>@Store(type=&quot;elasticsearch&quot;, hostname=&quot;&lt;STRING&gt;&quot;, port=&quot;&lt;INT&gt;&quot;, scheme=&quot;&lt;STRING&gt;&quot;, elasticsearch.member.list=&quot;&lt;STRING&gt;&quot;, username=&quot;&lt;STRING&gt;&quot;, password=&quot;&lt;STRING&gt;&quot;, index.name=&quot;&lt;STRING&gt;&quot;, index.type=&quot;&lt;STRING&gt;&quot;, payload.index.of.index.name=&quot;&lt;INT&gt;&quot;, index.alias=&quot;&lt;STRING&gt;&quot;, index.number.of.shards=&quot;&lt;INT&gt;&quot;, index.number.of.replicas=&quot;&lt;INT&gt;&quot;, bulk.actions=&quot;&lt;INT&gt;&quot;, bulk.size=&quot;&lt;LONG&gt;&quot;, concurrent.requests=&quot;&lt;INT&gt;&quot;, flush.interval=&quot;&lt;LONG&gt;&quot;, backoff.policy.retry.no=&quot;&lt;INT&gt;&quot;, backoff.policy.wait.time=&quot;&lt;LONG&gt;&quot;, ssl.enabled=&quot;&lt;BOOL&gt;&quot;, trust.store.type=&quot;&lt;STRING&gt;&quot;, trust.store.path=&quot;&lt;STRING&gt;&quot;, trust.store.pass=&quot;&lt;STRING&gt;&quot;)
+<pre><code>@Store(type=&quot;elasticsearch&quot;, hostname=&quot;&lt;STRING&gt;&quot;, port=&quot;&lt;INT&gt;&quot;, scheme=&quot;&lt;STRING&gt;&quot;, elasticsearch.member.list=&quot;&lt;STRING&gt;&quot;, username=&quot;&lt;STRING&gt;&quot;, password=&quot;&lt;STRING&gt;&quot;, index.name=&quot;&lt;STRING&gt;&quot;, index.type=&quot;&lt;STRING&gt;&quot;, payload.index.of.index.name=&quot;&lt;INT&gt;&quot;, index.alias=&quot;&lt;STRING&gt;&quot;, index.number.of.shards=&quot;&lt;INT&gt;&quot;, index.number.of.replicas=&quot;&lt;INT&gt;&quot;, bulk.actions=&quot;&lt;INT&gt;&quot;, bulk.size=&quot;&lt;LONG&gt;&quot;, concurrent.requests=&quot;&lt;INT&gt;&quot;, flush.interval=&quot;&lt;LONG&gt;&quot;, backoff.policy.retry.no=&quot;&lt;INT&gt;&quot;, backoff.policy.wait.time=&quot;&lt;LONG&gt;&quot;, ssl.enabled=&quot;&lt;BOOL&gt;&quot;, trust.store.type=&quot;&lt;STRING&gt;&quot;, trust.store.path=&quot;&lt;STRING&gt;&quot;, trust.store.pass=&quot;&lt;STRING&gt;&quot;)
 @PrimaryKey(&quot;PRIMARY_KEY&quot;)
 @Index(&quot;INDEX&quot;)
-</pre></div>
-
+</code></pre>
 
 <p><span id="query-parameters" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">QUERY PARAMETERS</span>
 <table>
@@ -760,26 +773,23 @@
 </table></p>
 <p><span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
 <span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span></p>
-<div class="codehilite"><pre><span></span>@Store(type=&quot;elasticsearch&quot;, host=&quot;localhost&quot;, username=&quot;elastic&quot;, password=&quot;changeme&quot;, index.name=&quot;MyStockTable&quot;, field.length=&quot;symbol:100&quot;, bulk.actions=&quot;5000&quot;, bulk.size=&quot;1&quot;, concurrent.requests=&quot;2&quot;, flush.interval=&quot;1&quot;, backoff.policy.retry.no=&quot;3&quot;, backoff.policy.wait.time=&quot;1&quot;)
+<pre><code>@Store(type=&quot;elasticsearch&quot;, host=&quot;localhost&quot;, username=&quot;elastic&quot;, password=&quot;changeme&quot;, index.name=&quot;MyStockTable&quot;, field.length=&quot;symbol:100&quot;, bulk.actions=&quot;5000&quot;, bulk.size=&quot;1&quot;, concurrent.requests=&quot;2&quot;, flush.interval=&quot;1&quot;, backoff.policy.retry.no=&quot;3&quot;, backoff.policy.wait.time=&quot;1&quot;)
 @PrimaryKey(&quot;symbol&quot;)define table StockTable (symbol string, price float, volume long);
-</pre></div>
-
+</code></pre>
 
 <p style="word-wrap: break-word">This example creates an index named 'MyStockTable' in the Elasticsearch server if it does not already exist (with three attributes named 'symbol', 'price', and 'volume' of the types 'string', 'float' and 'long' respectively). The connection is made as specified by the parameters configured for the '@Store' annotation. The 'symbol' attribute is considered a unique field and an Elasticsearch index document ID is generated for it.</p>
 
 <p><span id="example-2" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 2</span></p>
-<div class="codehilite"><pre><span></span>@Store(type=&quot;elasticsearch&quot;, host=&quot;localhost&quot;, username=&quot;elastic&quot;, password=&quot;changeme&quot;, index.name=&quot;MyStockTable&quot;, field.length=&quot;symbol:100&quot;, bulk.actions=&quot;5000&quot;, bulk.size=&quot;1&quot;, concurrent.requests=&quot;2&quot;, flush.interval=&quot;1&quot;, backoff.policy.retry.no=&quot;3&quot;, backoff.policy.wait.time=&quot;1&quot;, ssl.enabled=&quot;true&quot;, trust.store.type=&quot;jks&quot;, trust.store.path=&quot;/User/wso2/wso2sp/resources/security/client-truststore.jks&quot;, trust.store.pass=&quot;wso2carbon&quot;)
+<pre><code>@Store(type=&quot;elasticsearch&quot;, host=&quot;localhost&quot;, username=&quot;elastic&quot;, password=&quot;changeme&quot;, index.name=&quot;MyStockTable&quot;, field.length=&quot;symbol:100&quot;, bulk.actions=&quot;5000&quot;, bulk.size=&quot;1&quot;, concurrent.requests=&quot;2&quot;, flush.interval=&quot;1&quot;, backoff.policy.retry.no=&quot;3&quot;, backoff.policy.wait.time=&quot;1&quot;, ssl.enabled=&quot;true&quot;, trust.store.type=&quot;jks&quot;, trust.store.path=&quot;/User/wso2/wso2sp/resources/security/client-truststore.jks&quot;, trust.store.pass=&quot;wso2carbon&quot;)
 @PrimaryKey(&quot;symbol&quot;)define table StockTable (symbol string, price float, volume long);
-</pre></div>
-
+</code></pre>
 
 <p style="word-wrap: break-word">This example uses SSL to connect to Elasticsearch.</p>
 
 <p><span id="example-3" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 3</span></p>
-<div class="codehilite"><pre><span></span>@Store(type=&quot;elasticsearch&quot;, elasticsearch.member.list=&quot;https://hostname1:9200,https://hostname2:9200&quot;, username=&quot;elastic&quot;, password=&quot;changeme&quot;, index.name=&quot;MyStockTable&quot;, field.length=&quot;symbol:100&quot;, bulk.actions=&quot;5000&quot;, bulk.size=&quot;1&quot;, concurrent.requests=&quot;2&quot;, flush.interval=&quot;1&quot;, backoff.policy.retry.no=&quot;3&quot;, backoff.policy.wait.time=&quot;1&quot;)
+<pre><code>@Store(type=&quot;elasticsearch&quot;, elasticsearch.member.list=&quot;https://hostname1:9200,https://hostname2:9200&quot;, username=&quot;elastic&quot;, password=&quot;changeme&quot;, index.name=&quot;MyStockTable&quot;, field.length=&quot;symbol:100&quot;, bulk.actions=&quot;5000&quot;, bulk.size=&quot;1&quot;, concurrent.requests=&quot;2&quot;, flush.interval=&quot;1&quot;, backoff.policy.retry.no=&quot;3&quot;, backoff.policy.wait.time=&quot;1&quot;)
 @PrimaryKey(&quot;symbol&quot;)define table StockTable (symbol string, price float, volume long);
-</pre></div>
-
+</code></pre>
 
 <p style="word-wrap: break-word">This example defined several elasticsearch members to publish data using elasticsearch.member.list parameter.</p>
                 
@@ -802,7 +812,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../.." title="Welcome" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../3.0.0/" title="3.0.0" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -811,7 +821,7 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Welcome
+                3.0.0
               </span>
             </div>
           </a>
@@ -839,7 +849,7 @@
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2011 - 2018 WSO2
+            Siddhi - Documentation
           </div>
         
         powered by
@@ -849,33 +859,30 @@
           Material for MkDocs</a>
       </div>
       
-        
   <div class="md-footer-social">
     <link rel="stylesheet" href="../../assets/fonts/font-awesome.css">
     
-      <a href="https://github.com/wso2/siddhi" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/siddhi-io/siddhi" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="https://medium.com/siddhi-io" class="md-footer-social__link fa fa-medium"></a>
+    
+      <a href="https://twitter.com/siddhi_io" class="md-footer-social__link fa fa-twitter"></a>
     
       <a href="https://www.linkedin.com/groups/13553064" class="md-footer-social__link fa fa-linkedin"></a>
     
   </div>
 
-      
     </div>
   </div>
 </footer>
       
     </div>
     
-      <script src="../../assets/javascripts/application.a59e2a89.js"></script>
+      <script src="../../assets/javascripts/application.245445c6.js"></script>
       
-      <script>app.initialize({version:"0.17.4",url:{base:"../.."}})</script>
+      <script>app.initialize({version:"1.0.4",url:{base:"../.."}})</script>
       
-        <script src="../../javascripts/extra.js"></script>
-      
-    
-    
-      
-        <script>!function(e,a,t,n,o,c,i){e.GoogleAnalyticsObject=o,e.ga=e.ga||function(){(e.ga.q=e.ga.q||[]).push(arguments)},e.ga.l=1*new Date,c=a.createElement(t),i=a.getElementsByTagName(t)[0],c.async=1,c.src="https://www.google-analytics.com/analytics.js",i.parentNode.insertBefore(c,i)}(window,document,"script",0,"ga"),ga("create","UA-103065-28","auto"),ga("set","anonymizeIp",!0),ga("send","pageview");var links=document.getElementsByTagName("a");if(Array.prototype.map.call(links,function(e){e.host!=document.location.host&&e.addEventListener("click",function(){var a=e.getAttribute("data-md-action")||"follow";ga("send","event","outbound",a,e.href)})}),document.forms.search){var query=document.forms.search.query;query.addEventListener("blur",function(){if(this.value){var e=document.location.pathname;ga("send","pageview",e+"?q="+this.value)}})}</script>
+        <script src="../../assets/javascripts/extra.js"></script>
       
     
   </body>
