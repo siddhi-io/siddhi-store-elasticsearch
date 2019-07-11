@@ -29,19 +29,19 @@ Latest API Docs is <a target="_blank" href="https://siddhi-io.github.io/siddhi-s
 ## Prerequisites
  - Elasticsearch can be downloaded directly from href="https://www.elastic.co/downloads/elasticsearch" in zip, tar.gz, deb, or rpm packages. 
  - Then install the version 6.2.4, usual Ubuntu way with dpkg.
-   
-    ```
-        sudo apt-get update
-        wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/6.2.4/elasticsearch-6.2.4.deb
-        sudo dpkg -i elasticsearch-6.2.4.deb
-    ```
-   
+
+```
+     sudo apt-get update
+     wget https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/6.2.4/elasticsearch-6.2.4.deb
+     sudo dpkg -i elasticsearch-6.2.4.deb
+```
+
    <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-elasticsearch-on-ubuntu-16-04">How To Install and Configure Elasticsearch on Ubuntu 16.04</a>
  - Also you can start the Elasticsearch server using docker image:
    
-    ```
-        docker run -p 9600:9200 -p 9700:9300 -e "discovery.type=single-node" -e ELASTIC_PASSWORD=MagicWord -d docker.elastic.co/elasticsearch/elasticsearch:6.2.4
-    ```
+```
+     docker run -p 9600:9200 -p 9700:9300 -e "discovery.type=single-node" -e ELASTIC_PASSWORD=MagicWord -d docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+```
    
 ## Dependencies 
 
