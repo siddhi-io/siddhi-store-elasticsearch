@@ -32,6 +32,7 @@ public class ElasticsearchTableConstants {
     public static final String ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS = "index.number.of.shards";
     public static final String ANNOTATION_ELEMENT_INDEX_NUMBER_OF_REPLICAS = "index.number.of.replicas";
     public static final String ANNOTATION_ELEMENT_INDEX_ALIAS = "index.alias";
+    public static final String ANNOTATION_ELEMENT_INDEX_TYPE = "index.type";
     public static final String ANNOTATION_ELEMENT_UPDATE_BATCH_SIZE = "update.batch.size";
     public static final String ANNOTATION_ELEMENT_BULK_ACTIONS = "bulk.actions";
     public static final String ANNOTATION_ELEMENT_BULK_SIZE = "bulk.size";
@@ -49,6 +50,7 @@ public class ElasticsearchTableConstants {
     public static final String ANNOTATION_TYPE_MAPPINGS = "TypeMappings";
 
     public static final String DEFAULT_HOSTNAME = "localhost";
+    public static final String DEFAULT_INDEX_TYPE = "_doc";
     public static final int DEFAULT_PORT = 9200;
     public static final int DEFAULT_NUMBER_OF_SHARDS = 3;
     public static final int DEFAULT_NUMBER_OF_REPLICAS = 2;

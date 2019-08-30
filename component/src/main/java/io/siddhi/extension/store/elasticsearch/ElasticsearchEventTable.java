@@ -50,6 +50,7 @@ import org.apache.http.ssl.SSLContexts;
 import org.apache.log4j.Logger;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.alias.Alias;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -57,11 +58,8 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
@@ -109,6 +107,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
         ANNOTATION_ELEMENT_INDEX_NUMBER_OF_REPLICAS;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_TYPE;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_MEMBER_LIST;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
@@ -139,6 +138,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
         DEFAULT_CONCURRENT_REQUESTS;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_FLUSH_INTERVAL;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_HOSTNAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_INDEX_TYPE;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_IO_THREAD_COUNT;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_NUMBER_OF_REPLICAS;
@@ -307,6 +307,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private List<String> primaryKeys;
     private String hostname = DEFAULT_HOSTNAME;
     private String indexName;
+    private String indexType = DEFAULT_INDEX_TYPE;
     private String indexAlias;
     private int port = DEFAULT_PORT;
     private String scheme = DEFAULT_SCHEME;
@@ -372,6 +373,11 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                 port = Integer.parseInt(storeAnnotation.getElement(ANNOTATION_ELEMENT_PORT));
             } else {
                 port = Integer.parseInt(configReader.readConfig(ANNOTATION_ELEMENT_HOSTNAME, String.valueOf(port)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE))) {
+                indexType = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_TYPE);
+            } else {
+                indexType = configReader.readConfig(ANNOTATION_ELEMENT_INDEX_TYPE, indexType);
             }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.
                     getElement(ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS))) {
@@ -555,9 +561,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     }
                     return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
                 }));
-        BulkProcessor.Builder bulkProcessorBuilder = BulkProcessor.builder(
-                (request, bulkListener) ->
-                        restHighLevelClient.bulkAsync(request, RequestOptions.DEFAULT, bulkListener),
+        BulkProcessor.Builder bulkProcessorBuilder = BulkProcessor.builder(restHighLevelClient::bulkAsync,
                 new BulkProcessorListener());
         bulkProcessorBuilder.setBulkActions(bulkActions);
         bulkProcessorBuilder.setBulkSize(new ByteSizeValue(bulkSize, ByteSizeUnit.MB));
@@ -567,7 +571,74 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                 TimeValue.timeValueSeconds(backoffPolicyWaitTime), backoffPolicyRetryNo));
         bulkProcessor = bulkProcessorBuilder.build();
         if (indexName != null && !indexName.isEmpty()) {
-            createIndex();
+            CreateIndexRequest request = new CreateIndexRequest(indexName);
+            request.settings(Settings.builder()
+                    .put(SETTING_INDEX_NUMBER_OF_SHARDS, numberOfShards)
+                    .put(SETTING_INDEX_NUMBER_OF_REPLICAS, numberOfReplicas)
+            );
+            try {
+                XContentBuilder builder = XContentFactory.jsonBuilder();
+                builder.startObject();
+                {
+                    builder.startObject(indexType);
+                    {
+                        builder.startObject(MAPPING_PROPERTIES_ELEMENT);
+                        {
+                            for (Attribute attribute : attributes) {
+                                builder.startObject(attribute.getName());
+                                {
+                                    if (attribute.getType().equals(Attribute.Type.STRING)) {
+                                        builder.field(MAPPING_TYPE_ELEMENT, "text");
+                                        builder.startObject("fields");
+                                        {
+                                            builder.startObject("keyword");
+                                            {
+                                                builder.field("type", "keyword");
+                                                builder.field("ignore_above", 256);
+                                            }
+                                            builder.endObject();
+                                        }
+                                        builder.endObject();
+                                    } else if (attribute.getType().equals(Attribute.Type.INT)) {
+                                        builder.field(MAPPING_TYPE_ELEMENT, "integer");
+                                    } else if (attribute.getType().equals(Attribute.Type.LONG)) {
+                                        builder.field(MAPPING_TYPE_ELEMENT, "long");
+                                    } else if (attribute.getType().equals(Attribute.Type.FLOAT)) {
+                                        builder.field(MAPPING_TYPE_ELEMENT, "float");
+                                    } else if (attribute.getType().equals(Attribute.Type.DOUBLE)) {
+                                        builder.field(MAPPING_TYPE_ELEMENT, "double");
+                                    } else if (attribute.getType().equals(Attribute.Type.BOOL)) {
+                                        builder.field(MAPPING_TYPE_ELEMENT, "boolean");
+                                    } else {
+                                        builder.field(MAPPING_TYPE_ELEMENT, "object");
+                                    }
+                                }
+                                builder.endObject();
+                            }
+                        }
+                        builder.endObject();
+                    }
+                    builder.endObject();
+                }
+                builder.endObject();
+                request.mapping(indexName, builder);
+            } catch (IOException e) {
+                throw new ElasticsearchEventTableException("Error while generating mapping for table id : '" +
+                        tableDefinition.getId(), e);
+            }
+            if (indexAlias != null) {
+                request.alias(new Alias(indexAlias));
+            }
+            try {
+                restHighLevelClient.indices().create(request);
+                logger.debug("A table id: " + tableDefinition.getId() + " is created with the provided information.");
+            } catch (IOException e) {
+                throw new ElasticsearchEventTableException("Error while creating indices for table id : '" +
+                        tableDefinition.getId(), e);
+            } catch (ElasticsearchStatusException e) {
+                logger.debug("Elasticsearch status exception occurs while creating index for table id: " +
+                        tableDefinition.getId(), e);
+            }
         }
     }
 
@@ -603,17 +674,19 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     @Override
     protected void add(List<Object[]> records) throws ConnectionUnavailableException {
         for (Object[] record : records) {
-            if (payloadIndexOfIndexName != -1 &&
-                    (indexName == null || !indexName.equalsIgnoreCase((String) record[payloadIndexOfIndexName]))) {
+            if (payloadIndexOfIndexName != -1) {
                 indexName = (String) record[payloadIndexOfIndexName];
-                createIndex();
             }
-            IndexRequest indexRequest = new IndexRequest(indexName);
+            IndexRequest indexRequest;
             if (primaryKeys != null && !primaryKeys.isEmpty()) {
                 String docId = ElasticsearchTableUtils.generateRecordIdFromPrimaryKeyValues(attributes, record,
                         primaryKeys);
-                indexRequest.id(docId);
+                indexRequest = new IndexRequest(indexName, indexType, docId);
+            } else {
+                //record id will be generated by the Elasticsearch
+                indexRequest = new IndexRequest(indexName, indexType);
             }
+
             try {
                 XContentBuilder builder = XContentFactory.jsonBuilder();
                 builder.startObject();
@@ -697,7 +770,8 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     docId = ElasticsearchTableUtils.generateRecordIdFromPrimaryKeyValues(attributes, record,
                             primaryKeys);
                 }
-                DeleteRequest deleteRequest = new DeleteRequest(indexName, docId != null ? docId : "1");
+                DeleteRequest deleteRequest = new DeleteRequest(indexName, indexType,
+                        docId != null ? docId : "1");
                 bulkProcessor.add(deleteRequest);
             }
         } catch (Throwable throwable) {
@@ -734,8 +808,8 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     builder.field(attributes.get(i).getName(), record.get(attributes.get(i).getName()));
                 }
                 builder.endObject();
-                UpdateRequest updateRequest = new UpdateRequest(indexName, docId != null ? docId : "1").
-                        doc(builder);
+                UpdateRequest updateRequest = new UpdateRequest(indexName, indexType,
+                        docId != null ? docId : "1").doc(builder);
                 bulkProcessor.add(updateRequest);
             }
         } catch (Throwable throwable) {
@@ -773,8 +847,8 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     builder.field(attributes.get(i).getName(), record[i]);
                 }
                 builder.endObject();
-                UpdateRequest updateRequest = new UpdateRequest(indexName, docId != null ? docId : "1").
-                        doc(builder);
+                UpdateRequest updateRequest = new UpdateRequest(indexName, indexType,
+                        docId != null ? docId : "1").doc(builder);
                 bulkProcessor.add(updateRequest);
             }
         } catch (Throwable throwable) {
@@ -838,86 +912,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     @Override
     protected void destroy() {
 
-    }
-
-    private void createIndex() {
-        try {
-            if (restHighLevelClient.indices().exists(new GetIndexRequest(indexName), RequestOptions.DEFAULT)) {
-                logger.debug("Index: " + indexName + " has already being created for table id: " +
-                        tableDefinition.getId() + ".");
-                return;
-            }
-        } catch (IOException e) {
-            throw new ElasticsearchEventTableException("Error while checking indices for table id : '" +
-                    tableDefinition.getId(), e);
-        }
-
-        CreateIndexRequest request = new CreateIndexRequest(indexName);
-        request.settings(Settings.builder()
-                .put(SETTING_INDEX_NUMBER_OF_SHARDS, numberOfShards)
-                .put(SETTING_INDEX_NUMBER_OF_REPLICAS, numberOfReplicas)
-        );
-        try {
-            XContentBuilder builder = XContentFactory.jsonBuilder();
-            builder.startObject();
-            {
-                builder.startObject(MAPPING_PROPERTIES_ELEMENT);
-                {
-                    for (Attribute attribute : attributes) {
-                        builder.startObject(attribute.getName());
-                        {
-                            if (typeMappings.containsKey(attribute.getName())) {
-                                builder.field(MAPPING_TYPE_ELEMENT, typeMappings.get(attribute.getName()));
-                            } else if (attribute.getType().equals(Attribute.Type.STRING)) {
-                                builder.field(MAPPING_TYPE_ELEMENT, "text");
-                                builder.startObject("fields");
-                                {
-                                    builder.startObject("keyword");
-                                    {
-                                        builder.field("type", "keyword");
-                                        builder.field("ignore_above", 256);
-                                    }
-                                    builder.endObject();
-                                }
-                                builder.endObject();
-                            } else if (attribute.getType().equals(Attribute.Type.INT)) {
-                                builder.field(MAPPING_TYPE_ELEMENT, "integer");
-                            } else if (attribute.getType().equals(Attribute.Type.LONG)) {
-                                builder.field(MAPPING_TYPE_ELEMENT, "long");
-                            } else if (attribute.getType().equals(Attribute.Type.FLOAT)) {
-                                builder.field(MAPPING_TYPE_ELEMENT, "float");
-                            } else if (attribute.getType().equals(Attribute.Type.DOUBLE)) {
-                                builder.field(MAPPING_TYPE_ELEMENT, "double");
-                            } else if (attribute.getType().equals(Attribute.Type.BOOL)) {
-                                builder.field(MAPPING_TYPE_ELEMENT, "boolean");
-                            } else {
-                                builder.field(MAPPING_TYPE_ELEMENT, "object");
-                            }
-                        }
-                        builder.endObject();
-                    }
-                }
-                builder.endObject();
-            }
-            builder.endObject();
-            request.mapping(builder);
-        } catch (IOException e) {
-            throw new ElasticsearchEventTableException("Error while generating mapping for table id : '" +
-                    tableDefinition.getId(), e);
-        }
-        if (indexAlias != null) {
-            request.alias(new Alias(indexAlias));
-        }
-        try {
-            restHighLevelClient.indices().create(request, RequestOptions.DEFAULT);
-            logger.debug("A table id: " + tableDefinition.getId() + " is created with the provided information.");
-        } catch (IOException e) {
-            throw new ElasticsearchEventTableException("Error while creating indices for table id : '" +
-                    tableDefinition.getId(), e);
-        } catch (ElasticsearchStatusException e) {
-            logger.error("Elasticsearch status exception occurred while creating index for table id: " +
-                    tableDefinition.getId(), e);
-        }
     }
 
     private void validateTypeMappingAttribute(String typeMappingAttributeName) {
