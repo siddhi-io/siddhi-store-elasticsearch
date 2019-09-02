@@ -23,7 +23,6 @@ import io.siddhi.extension.store.elasticsearch.exceptions.ElasticsearchServiceEx
 import io.siddhi.query.api.definition.Attribute;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -54,7 +53,7 @@ public class ElasticsearchRecordIterator implements RecordIterator<Object[]> {
         searchSourceBuilder.query(queryBuilder);
         searchRequest.source(searchSourceBuilder);
         try {
-            SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+            SearchResponse searchResponse = restHighLevelClient.search(searchRequest);
             elasticsearchHitsIterator = searchResponse.getHits().iterator();
         } catch (IOException e) {
             throw new ElasticsearchServiceException("Error while performing search the query: '" + queryString + "'",
