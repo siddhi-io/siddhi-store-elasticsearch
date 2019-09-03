@@ -51,6 +51,7 @@ import org.apache.log4j.Logger;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.bulk.BackoffPolicy;
+import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -85,6 +86,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BACKOFF_POLICY;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BACKOFF_POLICY_CONSTANT_BACKOFF;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BACKOFF_POLICY_DISABLE;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BACKOFF_POLICY_EXPONENTIAL_BACKOFF;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
@@ -129,6 +138,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
         ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_USER;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_TYPE_MAPPINGS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BACKOFF_POLICY;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
         DEFAULT_BACKOFF_POLICY_RETRY_NO;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
@@ -251,7 +261,21 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                 @Parameter(name = "trust.store.pass",
                         description = "Trust store password.",
                         type = {DataType.STRING}, optional = true,
-                        defaultValue = "wso2carbon")
+                        defaultValue = "wso2carbon"),
+                @Parameter(name = "backoff.policy",
+                        description = "Provides a backoff policy(eg: constantBackoff, exponentialBackoff, disable) " +
+                                "for bulk requests, whenever a bulk request is rejected due to resource constraints. " +
+                                "Bulk processor will wait before the operation is retried internally.",
+                        type = {DataType.STRING}, optional = true,
+                        defaultValue = "constantBackoff"),
+                @Parameter(name = "backoff.policy.retry.no",
+                        description = "The maximum number of retries. Must be a non-negative number.",
+                        type = {DataType.INT}, optional = true,
+                        defaultValue = "3"),
+                @Parameter(name = "backoff.policy.wait.time",
+                        description = "The delay defines how long to wait between retry attempts. Must not be null.",
+                        type = {DataType.INT}, optional = true,
+                        defaultValue = "1")
         },
 
         examples = {
@@ -319,6 +343,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private long bulkSize = DEFAULT_BULK_SIZE_IN_MB;
     private int concurrentRequests = DEFAULT_CONCURRENT_REQUESTS;
     private long flushInterval = DEFAULT_FLUSH_INTERVAL;
+    private String backoffPolicy = DEFAULT_BACKOFF_POLICY;
     private int backoffPolicyRetryNo = DEFAULT_BACKOFF_POLICY_RETRY_NO;
     private long backoffPolicyWaitTime = DEFAULT_BACKOFF_POLICY_WAIT_TIME;
     private int ioThreadCount = DEFAULT_IO_THREAD_COUNT;
@@ -432,6 +457,16 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             } else {
                 flushInterval = Long.parseLong(configReader.readConfig(ANNOTATION_ELEMENT_FLUSH_INTERVAL,
                         String.valueOf(flushInterval)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(
+                    ANNOTATION_ELEMENT_BACKOFF_POLICY))) {
+                backoffPolicy = storeAnnotation.getElement(ANNOTATION_ELEMENT_BACKOFF_POLICY);
+                backoffPolicy = backoffPolicy.equalsIgnoreCase(ANNOTATION_ELEMENT_BACKOFF_POLICY_CONSTANT_BACKOFF) ||
+                        backoffPolicy.equalsIgnoreCase(ANNOTATION_ELEMENT_BACKOFF_POLICY_EXPONENTIAL_BACKOFF) ||
+                        !backoffPolicy.equalsIgnoreCase(ANNOTATION_ELEMENT_BACKOFF_POLICY_DISABLE) ?
+                        backoffPolicy : null;
+            } else {
+                backoffPolicy = configReader.readConfig(ANNOTATION_ELEMENT_BACKOFF_POLICY, backoffPolicy);
             }
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(
                     ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO))) {
@@ -563,8 +598,15 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         bulkProcessorBuilder.setBulkSize(new ByteSizeValue(bulkSize, ByteSizeUnit.MB));
         bulkProcessorBuilder.setConcurrentRequests(concurrentRequests);
         bulkProcessorBuilder.setFlushInterval(TimeValue.timeValueSeconds(flushInterval));
-        bulkProcessorBuilder.setBackoffPolicy(BackoffPolicy.constantBackoff(
-                TimeValue.timeValueSeconds(backoffPolicyWaitTime), backoffPolicyRetryNo));
+        if (backoffPolicy == null) {
+            bulkProcessorBuilder.setBackoffPolicy(BackoffPolicy.noBackoff());
+        } else if (backoffPolicy.equalsIgnoreCase(ANNOTATION_ELEMENT_BACKOFF_POLICY_CONSTANT_BACKOFF)) {
+            bulkProcessorBuilder.setBackoffPolicy(BackoffPolicy.constantBackoff(
+                    TimeValue.timeValueSeconds(backoffPolicyWaitTime), backoffPolicyRetryNo));
+        } else {
+            bulkProcessorBuilder.setBackoffPolicy(BackoffPolicy.exponentialBackoff(
+                    TimeValue.timeValueSeconds(backoffPolicyWaitTime), backoffPolicyRetryNo));
+        }
         bulkProcessor = bulkProcessorBuilder.build();
         if (indexName != null && !indexName.isEmpty()) {
             createIndex();
@@ -581,10 +623,27 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         @Override
         public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
             if (response.hasFailures()) {
-                logger.warn("Bulk [{}] executed with failures for executionId: " + executionId);
+                logger.warn("Bulk [{}] executed with failures for executionId: " + executionId + ", failure : "
+                        + response.buildFailureMessage() + ", status : " + response.status().getStatus());
+                if (logger.isDebugEnabled()) {
+                    for (BulkItemResponse itemResponse : response) {
+                        if (itemResponse.isFailed()) {
+                            logger.warn("Bulk [{}] executed with failures for executionId: " + executionId
+                                    + ", item : " + itemResponse.getItemId() + ", response message: "
+                                    + itemResponse.getFailureMessage() + ", failure : " + itemResponse.getFailure()
+                                    + " message : " + itemResponse.getResponse().toString());
+                        }
+                    }
+                }
             } else {
-                logger.debug("Bulk [{" + executionId + "}] completed in {" + response.getTook().getMillis() +
-                        "} milliseconds");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Bulk [{" + executionId + "}] completed in {" + response.getTook().getMillis() +
+                           "} milliseconds");
+                    for (BulkItemResponse itemResponse : response) {
+                        logger.trace("Bulk [{" + executionId + "}] completed for : " +
+                                itemResponse.getResponse().toString());
+                    }
+                }
             }
         }
 
