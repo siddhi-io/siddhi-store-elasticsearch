@@ -38,7 +38,7 @@
     
     
       
-        <title>1.1.2 - Siddhi Store Elasticsearch</title>
+        <title>API Docs - v3.0.1-SNAPSHOT - Siddhi Store Elasticsearch</title>
       
     
     
@@ -114,7 +114,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#api-docs-v112" tabindex="1" class="md-skip">
+      <a href="#api-docs-v301-snapshot" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -140,7 +140,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                1.1.2
+                API Docs - v3.0.1-SNAPSHOT
               
             </span>
           
@@ -261,12 +261,10 @@
       
       
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+  <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
     
     <label class="md-nav__link" for="nav-2">
       API Docs
@@ -378,62 +376,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        1.1.2
-      </label>
-    
-    <a href="./" title="1.1.2" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../1.1.2/" title="1.1.2" class="md-nav__link">
       1.1.2
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#store" title="Store" class="md-nav__link">
-    Store
-  </a>
-  
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#elasticsearch-store" title="elasticsearch (Store)" class="md-nav__link">
-    elasticsearch (Store)
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -606,16 +553,16 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/siddhi-io/siddhi-store-elasticsearch/blob/master/api/1.1.2.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/siddhi-io/siddhi-store-elasticsearch/blob/master/api/3.0.1-SNAPSHOT.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="api-docs-v112">API Docs - v1.1.2</h1>
+                <h1 id="api-docs-v301-snapshot">API Docs - v3.0.1-SNAPSHOT</h1>
 <h2 id="store">Store</h2>
-<h3 id="elasticsearch-store">elasticsearch <em><a target="_blank" href="https://siddhi.io/en/v4.x/docs/query-guide/#store">(Store)</a></em></h3>
+<h3 id="elasticsearch-store">elasticsearch <em><a target="_blank" href="http://siddhi.io/documentation/siddhi-5.x/query-guide-5.x/#store">(Store)</a></em></h3>
 <p style="word-wrap: break-word">Elasticsearch store implementation uses Elasticsearch indexing document for underlying data storage. The events are converted to Elasticsearch index documents when the events are inserted into the elasticsearch store. Elasticsearch indexing documents are converted to events when the documents are read from Elasticsearch indexes. The internal store is connected to the Elastisearch server via the Elasticsearch Java High Level REST Client library.</p>
 
 <p><span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span></p>
-<pre><code>@Store(type=&quot;elasticsearch&quot;, hostname=&quot;&lt;STRING&gt;&quot;, port=&quot;&lt;INT&gt;&quot;, scheme=&quot;&lt;STRING&gt;&quot;, username=&quot;&lt;STRING&gt;&quot;, password=&quot;&lt;STRING&gt;&quot;, index.name=&quot;&lt;STRING&gt;&quot;, index.alias=&quot;&lt;STRING&gt;&quot;, index.number.of.shards=&quot;&lt;INT&gt;&quot;, index.number.of.replicas=&quot;&lt;INT&gt;&quot;, bulk.actions=&quot;&lt;INT&gt;&quot;, bulk.size=&quot;&lt;LONG&gt;&quot;, concurrent.requests=&quot;&lt;INT&gt;&quot;, flush.interval=&quot;&lt;LONG&gt;&quot;, backoff.policy.retry.no=&quot;&lt;INT&gt;&quot;, backoff.policy.wait.time=&quot;&lt;LONG&gt;&quot;)
+<pre><code>@Store(type=&quot;elasticsearch&quot;, hostname=&quot;&lt;STRING&gt;&quot;, port=&quot;&lt;INT&gt;&quot;, scheme=&quot;&lt;STRING&gt;&quot;, elasticsearch.member.list=&quot;&lt;STRING&gt;&quot;, username=&quot;&lt;STRING&gt;&quot;, password=&quot;&lt;STRING&gt;&quot;, index.name=&quot;&lt;STRING&gt;&quot;, index.type=&quot;&lt;STRING&gt;&quot;, payload.index.of.index.name=&quot;&lt;INT&gt;&quot;, index.alias=&quot;&lt;STRING&gt;&quot;, index.number.of.shards=&quot;&lt;INT&gt;&quot;, index.number.of.replicas=&quot;&lt;INT&gt;&quot;, bulk.actions=&quot;&lt;INT&gt;&quot;, bulk.size=&quot;&lt;LONG&gt;&quot;, concurrent.requests=&quot;&lt;INT&gt;&quot;, flush.interval=&quot;&lt;LONG&gt;&quot;, backoff.policy.retry.no=&quot;&lt;INT&gt;&quot;, backoff.policy.wait.time=&quot;&lt;LONG&gt;&quot;, ssl.enabled=&quot;&lt;BOOL&gt;&quot;, trust.store.type=&quot;&lt;STRING&gt;&quot;, trust.store.path=&quot;&lt;STRING&gt;&quot;, trust.store.pass=&quot;&lt;STRING&gt;&quot;)
 @PrimaryKey(&quot;PRIMARY_KEY&quot;)
 @Index(&quot;INDEX&quot;)
 </code></pre>
@@ -655,6 +602,14 @@
         <td style="vertical-align: top">No</td>
     </tr>
     <tr>
+        <td style="vertical-align: top">elasticsearch.member.list</td>
+        <td style="vertical-align: top; word-wrap: break-word">The list of elasticsearch host names. in comma separated mannerhttps://hostname1:9200,https://hostname2:9200</td>
+        <td style="vertical-align: top">null</td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
         <td style="vertical-align: top">username</td>
         <td style="vertical-align: top; word-wrap: break-word">The username for the Elasticsearch server connection.</td>
         <td style="vertical-align: top">elastic</td>
@@ -675,6 +630,22 @@
         <td style="vertical-align: top; word-wrap: break-word">The name of the Elasticsearch index.</td>
         <td style="vertical-align: top">The table name defined in the Siddhi App query.</td>
         <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">index.type</td>
+        <td style="vertical-align: top; word-wrap: break-word">The the type of the index.</td>
+        <td style="vertical-align: top">_doc</td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">payload.index.of.index.name</td>
+        <td style="vertical-align: top; word-wrap: break-word">The payload which is used to create the index. This can be used if the user needs to create index names dynamically</td>
+        <td style="vertical-align: top">-1</td>
+        <td style="vertical-align: top">INT</td>
         <td style="vertical-align: top">Yes</td>
         <td style="vertical-align: top">No</td>
     </tr>
@@ -750,6 +721,38 @@
         <td style="vertical-align: top">Yes</td>
         <td style="vertical-align: top">No</td>
     </tr>
+    <tr>
+        <td style="vertical-align: top">ssl.enabled</td>
+        <td style="vertical-align: top; word-wrap: break-word">SSL is enabled or not.</td>
+        <td style="vertical-align: top">null</td>
+        <td style="vertical-align: top">BOOL</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">trust.store.type</td>
+        <td style="vertical-align: top; word-wrap: break-word">Trust store type.</td>
+        <td style="vertical-align: top">jks</td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">trust.store.path</td>
+        <td style="vertical-align: top; word-wrap: break-word">Trust store path.</td>
+        <td style="vertical-align: top">null</td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">trust.store.pass</td>
+        <td style="vertical-align: top; word-wrap: break-word">Trust store password.</td>
+        <td style="vertical-align: top">wso2carbon</td>
+        <td style="vertical-align: top">STRING</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
 </table></p>
 <p><span id="examples" class="md-typeset" style="display: block; font-weight: bold;">Examples</span>
 <span id="example-1" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 1</span></p>
@@ -758,6 +761,20 @@
 </code></pre>
 
 <p style="word-wrap: break-word">This example creates an index named 'MyStockTable' in the Elasticsearch server if it does not already exist (with three attributes named 'symbol', 'price', and 'volume' of the types 'string', 'float' and 'long' respectively). The connection is made as specified by the parameters configured for the '@Store' annotation. The 'symbol' attribute is considered a unique field and an Elasticsearch index document ID is generated for it.</p>
+
+<p><span id="example-2" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 2</span></p>
+<pre><code>@Store(type=&quot;elasticsearch&quot;, host=&quot;localhost&quot;, username=&quot;elastic&quot;, password=&quot;changeme&quot;, index.name=&quot;MyStockTable&quot;, field.length=&quot;symbol:100&quot;, bulk.actions=&quot;5000&quot;, bulk.size=&quot;1&quot;, concurrent.requests=&quot;2&quot;, flush.interval=&quot;1&quot;, backoff.policy.retry.no=&quot;3&quot;, backoff.policy.wait.time=&quot;1&quot;, ssl.enabled=&quot;true&quot;, trust.store.type=&quot;jks&quot;, trust.store.path=&quot;/User/wso2/wso2sp/resources/security/client-truststore.jks&quot;, trust.store.pass=&quot;wso2carbon&quot;)
+@PrimaryKey(&quot;symbol&quot;)define table StockTable (symbol string, price float, volume long);
+</code></pre>
+
+<p style="word-wrap: break-word">This example uses SSL to connect to Elasticsearch.</p>
+
+<p><span id="example-3" class="md-typeset" style="display: block; color: rgba(0, 0, 0, 0.54); font-size: 12.8px; font-weight: bold;">EXAMPLE 3</span></p>
+<pre><code>@Store(type=&quot;elasticsearch&quot;, elasticsearch.member.list=&quot;https://hostname1:9200,https://hostname2:9200&quot;, username=&quot;elastic&quot;, password=&quot;changeme&quot;, index.name=&quot;MyStockTable&quot;, field.length=&quot;symbol:100&quot;, bulk.actions=&quot;5000&quot;, bulk.size=&quot;1&quot;, concurrent.requests=&quot;2&quot;, flush.interval=&quot;1&quot;, backoff.policy.retry.no=&quot;3&quot;, backoff.policy.wait.time=&quot;1&quot;)
+@PrimaryKey(&quot;symbol&quot;)define table StockTable (symbol string, price float, volume long);
+</code></pre>
+
+<p style="word-wrap: break-word">This example defined several elasticsearch members to publish data using elasticsearch.member.list parameter.</p>
                 
                   
                 
@@ -774,41 +791,6 @@
       
         
 <footer class="md-footer">
-  
-    <div class="md-footer-nav">
-      <nav class="md-footer-nav__inner md-grid">
-        
-          <a href="../1.1.3/" title="1.1.3" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
-            </div>
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Previous
-                </span>
-                1.1.3
-              </span>
-            </div>
-          </a>
-        
-        
-          <a href="../1.1.1/" title="1.1.1" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                1.1.1
-              </span>
-            </div>
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
-            </div>
-          </a>
-        
-      </nav>
-    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
