@@ -16,7 +16,7 @@ For information on <a target="_blank" href="https://siddhi.io/">Siddhi</a> and i
 
 * Versions 3.x and above with group id `io.siddhi.extension.*` from <a target="_blank" href="https://mvnrepository.com/artifact/io.siddhi.extension.store.elasticsearch/siddhi-store-elasticsearch/">here</a>. This supports elastic search 7.x.x version and above (based on Siddhi 5.x.x).
 * Versions 2.x and above with group id `org.wso2.extension.siddhi.*` from <a target="_blank" href="https://mvnrepository.com/artifact/org.wso2.extension.siddhi.store.elasticsearch/siddhi-store-elasticsearch">here</a>. This supports elastic search 7.x.x version (based on Siddhi 4.x.x).
-* Versions 1.5.x and above with group id `io.siddhi.extension.*` from <a target="_blank" href="https://mvnrepository.com/artifact/io.siddhi.extension.store.elasticsearch/siddhi-store-elasticsearch/">here</a>. This supports elastic search 6.x.x version and above (based on Siddhi 5.x.x).
+* Versions 1.5.x and above with group id `io.siddhi.extension.*` from <a target="_blank" href="https://mvnrepository.com/artifact/io.siddhi.extension.store.elasticsearch/siddhi-store-elasticsearch/">here</a>. This supports elastic search 6.x.x version (based on Siddhi 5.x.x).
 * Versions 1.x and lower with group id `org.wso2.extension.siddhi.*` from <a target="_blank" href="https://mvnrepository.com/artifact/org.wso2.extension.siddhi.store.elasticsearch/siddhi-store-elasticsearch">here</a>. This supports elastic search 6.x.x version (based on Siddhi 4.x.x).
 
 ## Latest API Docs 
