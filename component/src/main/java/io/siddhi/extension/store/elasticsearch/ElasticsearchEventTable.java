@@ -203,7 +203,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                         description = "The password for the Elasticsearch server connection.",
                         type = {DataType.STRING}, optional = true, defaultValue = "changeme"),
                 @Parameter(name = "index.name",
-                        description = "The name of the Elasticsearch index.This must be lower case",
+                        description = "The name of the Elasticsearch index.This must be in lower case",
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "The table name defined in the Siddhi App query."),
                 @Parameter(name = "payload.index.of.index.name",
