@@ -203,7 +203,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                         description = "The password for the Elasticsearch server connection.",
                         type = {DataType.STRING}, optional = true, defaultValue = "changeme"),
                 @Parameter(name = "index.name",
-                        description = "The name of the Elasticsearch index.",
+                        description = "The name of the Elasticsearch index.This must be lower case",
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "The table name defined in the Siddhi App query."),
                 @Parameter(name = "payload.index.of.index.name",
@@ -281,13 +281,13 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
         examples = {
                 @Example(
                         syntax = "@Store(type=\"elasticsearch\", host=\"localhost\", " +
-                                "username=\"elastic\", password=\"changeme\", index.name=\"MyStockTable\", " +
+                                "username=\"elastic\", password=\"changeme\", index.name=\"mystocktable\", " +
                                 "field.length=\"symbol:100\", bulk.actions=\"5000\", bulk.size=\"1\", " +
                                 "concurrent.requests=\"2\", flush.interval=\"1\", backoff.policy.retry.no=\"3\", " +
                                 "backoff.policy.wait.time=\"1\")\n" +
                                 "@PrimaryKey(\"symbol\")" +
                                 "define table StockTable (symbol string, price float, volume long);",
-                        description = "This example creates an index named 'MyStockTable' in the Elasticsearch " +
+                        description = "This example creates an index named 'mystocktable' in the Elasticsearch " +
                                 "server if it does not already exist (with three attributes named 'symbol', 'price'," +
                                 " and 'volume' of the types 'string', 'float' and 'long' respectively). " +
                                 "The connection is made as specified by the parameters configured for the '@Store' " +
@@ -296,7 +296,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                 ),
                 @Example(
                         syntax = "@Store(type=\"elasticsearch\", host=\"localhost\", " +
-                                "username=\"elastic\", password=\"changeme\", index.name=\"MyStockTable\", " +
+                                "username=\"elastic\", password=\"changeme\", index.name=\"mystocktable\", " +
                                 "field.length=\"symbol:100\", bulk.actions=\"5000\", bulk.size=\"1\", " +
                                 "concurrent.requests=\"2\", flush.interval=\"1\", backoff.policy.retry.no=\"3\", " +
                                 "backoff.policy.wait.time=\"1\", ssl.enabled=\"true\", trust.store.type=\"jks\", " +
@@ -309,7 +309,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                 @Example(
                         syntax = "@Store(type=\"elasticsearch\", " +
                                 "elasticsearch.member.list=\"https://hostname1:9200,https://hostname2:9200\", " +
-                                "username=\"elastic\", password=\"changeme\", index.name=\"MyStockTable\", " +
+                                "username=\"elastic\", password=\"changeme\", index.name=\"mystocktable\", " +
                                 "field.length=\"symbol:100\", bulk.actions=\"5000\", bulk.size=\"1\", " +
                                 "concurrent.requests=\"2\", flush.interval=\"1\", backoff.policy.retry.no=\"3\", " +
                                 "backoff.policy.wait.time=\"1\")\n" +
