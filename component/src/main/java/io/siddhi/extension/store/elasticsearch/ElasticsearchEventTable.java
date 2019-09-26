@@ -204,12 +204,12 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                         description = "The password for the Elasticsearch server connection.",
                         type = {DataType.STRING}, optional = true, defaultValue = "changeme"),
                 @Parameter(name = "index.name",
-                        description = "The name of the Elasticsearch index. This should be in lower case.",
+                        description = "The name of the Elasticsearch index.This must be in lower case",
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "The table name defined in the Siddhi App query."),
                 @Parameter(name = "payload.index.of.index.name",
                         description = "The payload which is used to create the index. This can be used if the user " +
-                                "needs to create index names dynamically. This should be in lower case. If this " +
+                                "needs to create index names dynamically. This must be in lower case. If this " +
                                 "parameter is configured then respective elasticsearch table can be only used for " +
                                 "insert operations because indices are created in the runtime dynamically.",
                         type = {DataType.INT}, optional = true,
@@ -394,7 +394,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
 
             String indexNameInLowerCase = indexName.toLowerCase(Locale.getDefault());
             if (!indexName.equals(indexNameInLowerCase)) {
-                logger.warn("Index name : " + indexName + " should be in lower case in Siddhi application " +
+                logger.warn("Index name : " + indexName + " must be in lower case in Siddhi application " +
                         siddhiAppContext.getName() + ", hence changing it to lower case. New index name is " +
                         indexNameInLowerCase);
                 indexName = indexNameInLowerCase;
@@ -676,7 +676,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                 indexName = (String) record[payloadIndexOfIndexName];
                 String indexNameInLowerCase = indexName.toLowerCase(Locale.getDefault());
                 if (!indexName.equals(indexNameInLowerCase)) {
-                    logger.warn("Dynamic Index name : " + indexName + " should be in lower case in Siddhi " +
+                    logger.warn("Dynamic Index name : " + indexName + " must be in lower case in Siddhi " +
                             "application " + siddhiAppContext.getName() + ", hence changing it to lower case. " +
                             "New index name is " + indexNameInLowerCase);
                     indexName = indexNameInLowerCase;
@@ -716,13 +716,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     @Override
     protected RecordIterator<Object[]> find(Map<String, Object> findConditionParameterMap,
                                             CompiledCondition compiledCondition) throws ConnectionUnavailableException {
-        if (payloadIndexOfIndexName != -1) {
-            throw new ElasticsearchEventTableException("Elasticsearch table in Siddhi application: " +
-                    siddhiAppContext.getName() + " with hostname: " + hostname + " , port: " + port +
-                    " and index name: " + indexName + " can be only used for insert operations because indices " +
-                    "are created in the runtime dynamically.");
-        }
-
         try {
             return findRecords(findConditionParameterMap, compiledCondition);
         } catch (ElasticsearchServiceException e) {
