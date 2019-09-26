@@ -84,6 +84,7 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
@@ -203,12 +204,14 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                         description = "The password for the Elasticsearch server connection.",
                         type = {DataType.STRING}, optional = true, defaultValue = "changeme"),
                 @Parameter(name = "index.name",
-                        description = "The name of the Elasticsearch index.",
+                        description = "The name of the Elasticsearch index. This should be in lower case.",
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "The table name defined in the Siddhi App query."),
                 @Parameter(name = "payload.index.of.index.name",
                         description = "The payload which is used to create the index. This can be used if the user " +
-                                "needs to create index names dynamically",
+                                "needs to create index names dynamically. This should be in lower case. If this " +
+                                "parameter is configured then respective elasticsearch table can be only used for " +
+                                "insert operations because indices are created in the runtime dynamically.",
                         type = {DataType.INT}, optional = true,
                         defaultValue = "-1"),
                 @Parameter(name = "index.alias",
@@ -281,13 +284,13 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
         examples = {
                 @Example(
                         syntax = "@Store(type=\"elasticsearch\", host=\"localhost\", " +
-                                "username=\"elastic\", password=\"changeme\", index.name=\"MyStockTable\", " +
+                                "username=\"elastic\", password=\"changeme\", index.name=\"mystocktable\", " +
                                 "field.length=\"symbol:100\", bulk.actions=\"5000\", bulk.size=\"1\", " +
                                 "concurrent.requests=\"2\", flush.interval=\"1\", backoff.policy.retry.no=\"3\", " +
                                 "backoff.policy.wait.time=\"1\")\n" +
                                 "@PrimaryKey(\"symbol\")" +
                                 "define table StockTable (symbol string, price float, volume long);",
-                        description = "This example creates an index named 'MyStockTable' in the Elasticsearch " +
+                        description = "This example creates an index named 'mystocktable' in the Elasticsearch " +
                                 "server if it does not already exist (with three attributes named 'symbol', 'price'," +
                                 " and 'volume' of the types 'string', 'float' and 'long' respectively). " +
                                 "The connection is made as specified by the parameters configured for the '@Store' " +
@@ -296,7 +299,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                 ),
                 @Example(
                         syntax = "@Store(type=\"elasticsearch\", host=\"localhost\", " +
-                                "username=\"elastic\", password=\"changeme\", index.name=\"MyStockTable\", " +
+                                "username=\"elastic\", password=\"changeme\", index.name=\"mystocktable\", " +
                                 "field.length=\"symbol:100\", bulk.actions=\"5000\", bulk.size=\"1\", " +
                                 "concurrent.requests=\"2\", flush.interval=\"1\", backoff.policy.retry.no=\"3\", " +
                                 "backoff.policy.wait.time=\"1\", ssl.enabled=\"true\", trust.store.type=\"jks\", " +
@@ -309,7 +312,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                 @Example(
                         syntax = "@Store(type=\"elasticsearch\", " +
                                 "elasticsearch.member.list=\"https://hostname1:9200,https://hostname2:9200\", " +
-                                "username=\"elastic\", password=\"changeme\", index.name=\"MyStockTable\", " +
+                                "username=\"elastic\", password=\"changeme\", index.name=\"mystocktable\", " +
                                 "field.length=\"symbol:100\", bulk.actions=\"5000\", bulk.size=\"1\", " +
                                 "concurrent.requests=\"2\", flush.interval=\"1\", backoff.policy.retry.no=\"3\", " +
                                 "backoff.policy.wait.time=\"1\")\n" +
@@ -388,6 +391,15 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             }
             indexName = ElasticsearchTableUtils.isEmpty(indexName) &&
                     payloadIndexOfIndexName == -1 ? tableDefinition.getId() : indexName;
+
+            String indexNameInLowerCase = indexName.toLowerCase(Locale.getDefault());
+            if (!indexName.equals(indexNameInLowerCase)) {
+                logger.warn("Index name : " + indexName + " should be in lower case in Siddhi application " +
+                        siddhiAppContext.getName() + ", hence changing it to lower case. New index name is " +
+                        indexNameInLowerCase);
+                indexName = indexNameInLowerCase;
+            }
+
             if (!ElasticsearchTableUtils.isEmpty(storeAnnotation.getElement(ANNOTATION_ELEMENT_HOSTNAME))) {
                 hostname = storeAnnotation.getElement(ANNOTATION_ELEMENT_HOSTNAME);
             } else {
@@ -532,9 +544,9 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY,
                 new UsernamePasswordCredentials(userName, password));
-        HttpHost httpHostList[];
+        HttpHost[] httpHostList;
         if (listOfHostnames != null) {
-            String hostNameList[] = listOfHostnames.split(",");
+            String[] hostNameList = listOfHostnames.split(",");
             httpHostList = new HttpHost[hostNameList.length];
             for (int i = 0; i < httpHostList.length; i++) {
                 try {
@@ -608,9 +620,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     TimeValue.timeValueSeconds(backoffPolicyWaitTime), backoffPolicyRetryNo));
         }
         bulkProcessor = bulkProcessorBuilder.build();
-        if (indexName != null && !indexName.isEmpty()) {
-            createIndex();
-        }
     }
 
     static class BulkProcessorListener implements BulkProcessor.Listener {
@@ -663,8 +672,15 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     protected void add(List<Object[]> records) throws ConnectionUnavailableException {
         for (Object[] record : records) {
             if (payloadIndexOfIndexName != -1 &&
-                    (indexName == null || !indexName.equalsIgnoreCase((String) record[payloadIndexOfIndexName]))) {
+                    (indexName == null || !indexName.equals(record[payloadIndexOfIndexName]))) {
                 indexName = (String) record[payloadIndexOfIndexName];
+                String indexNameInLowerCase = indexName.toLowerCase(Locale.getDefault());
+                if (!indexName.equals(indexNameInLowerCase)) {
+                    logger.warn("Dynamic Index name : " + indexName + " should be in lower case in Siddhi " +
+                            "application " + siddhiAppContext.getName() + ", hence changing it to lower case. " +
+                            "New index name is " + indexNameInLowerCase);
+                    indexName = indexNameInLowerCase;
+                }
                 createIndex();
             }
             IndexRequest indexRequest = new IndexRequest(indexName);
@@ -700,6 +716,13 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     @Override
     protected RecordIterator<Object[]> find(Map<String, Object> findConditionParameterMap,
                                             CompiledCondition compiledCondition) throws ConnectionUnavailableException {
+        if (payloadIndexOfIndexName != -1) {
+            throw new ElasticsearchEventTableException("Elasticsearch table in Siddhi application: " +
+                    siddhiAppContext.getName() + " with hostname: " + hostname + " , port: " + port +
+                    " and index name: " + indexName + " can be only used for insert operations because indices " +
+                    "are created in the runtime dynamically.");
+        }
+
         try {
             return findRecords(findConditionParameterMap, compiledCondition);
         } catch (ElasticsearchServiceException e) {
@@ -850,6 +873,13 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
      */
     @Override
     protected CompiledCondition compileCondition(ExpressionBuilder expressionBuilder) {
+        if (payloadIndexOfIndexName != -1) {
+            throw new ElasticsearchEventTableException("Elasticsearch table in Siddhi application:" +
+                    siddhiAppContext.getName() + " with hostname: " + hostname + " , port: " + port +
+                    " and index name: " + indexName + " cannot be used for join operations since dynamic indices are " +
+                    "created in the runtime.");
+        }
+
         ElasticsearchConditionVisitor visitor = new ElasticsearchConditionVisitor();
         expressionBuilder.build(visitor);
         return new ElasticsearchCompiledCondition(visitor.returnCondition());
@@ -878,7 +908,9 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
      */
     @Override
     protected void connect() throws ConnectionUnavailableException {
-
+        if (indexName != null && !indexName.isEmpty()) {
+            createIndex();
+        }
     }
 
     /**
