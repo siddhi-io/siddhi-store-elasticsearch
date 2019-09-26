@@ -44,8 +44,17 @@
             <artifactId>siddhi-query-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.log4j.wso2</groupId>
-            <artifactId>log4j</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-to-slf4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -271,16 +280,13 @@
                             org.elasticsearch.*;version="${elasticsearch.version.range}",
                             org.apache.http.*,
                             org.apache.lucene.*,
-                            org.apache.logging.log4j.*,
-                            org.apache.commons.logging.*,
                             org.joda.time.*,
                             io.siddhi.core.*;version="${siddhi.version.range}",
                             io.siddhi.annotation.*;version="${siddhi.version.range}",
                             io.siddhi.query.api.*;version="${siddhi.version.range}",
-                            org.apache.log4j.*,
                             com.fasterxml.jackson.core.*,
                             com.carrotsearch.hppc.*,
-                            ;resolution:=optional
+                            *;resolution:=optional
                         </Import-Package>
                         <Include-Resource>
                             META-INF=target/classes/META-INF
