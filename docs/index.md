@@ -21,11 +21,11 @@ For information on <a target="_blank" href="https://siddhi.io/">Siddhi</a> and i
 
 ## Latest API Docs 
 
-Latest API Docs is <a target="_blank" href="https://siddhi-io.github.io/siddhi-store-elasticsearch/api/3.1.1">3.1.1</a>.
+Latest API Docs is <a target="_blank" href="https://siddhi-io.github.io/siddhi-store-elasticsearch/api/3.1.2">3.1.2</a>.
 
 ## Features
 
-* <a target="_blank" href="https://siddhi-io.github.io/siddhi-store-elasticsearch/api/3.1.1/#elasticsearch-store">elasticsearch</a> *(<a target="_blank" href="http://siddhi.io/en/v5.1/docs/query-guide/#store">Store</a>)*<br> <div style="padding-left: 1em;"><p><p style="word-wrap: break-word;margin: 0;">Elasticsearch store implementation uses Elasticsearch indexing document for underlying data storage. The events are converted to Elasticsearch index documents when the events are inserted into the elasticsearch store. Elasticsearch indexing documents are converted to events when the documents are read from Elasticsearch indexes. The internal store is connected to the Elastisearch server via the Elasticsearch Java High Level REST Client library.</p></p></div>
+* <a target="_blank" href="https://siddhi-io.github.io/siddhi-store-elasticsearch/api/3.1.2/#elasticsearch-store">elasticsearch</a> *(<a target="_blank" href="http://siddhi.io/en/v5.1/docs/query-guide/#store">Store</a>)*<br> <div style="padding-left: 1em;"><p><p style="word-wrap: break-word;margin: 0;">Elasticsearch store implementation uses Elasticsearch indexing document for underlying data storage. The events are converted to Elasticsearch index documents when the events are inserted into the elasticsearch store. Elasticsearch indexing documents are converted to events when the documents are read from Elasticsearch indexes. The internal store is connected to the Elastisearch server via the Elasticsearch Java High Level REST Client library.</p></p></div>
 
 ## Prerequisites
  - Elasticsearch can be downloaded directly from href="https://www.elastic.co/downloads/elasticsearch" in zip, tar.gz, deb, or rpm packages. 
