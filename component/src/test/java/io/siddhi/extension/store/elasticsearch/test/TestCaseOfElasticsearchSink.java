@@ -1,3 +1,20 @@
+/*
+ * Copyright (c)  2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package io.siddhi.extension.store.elasticsearch.test;
 
 import io.siddhi.core.SiddhiAppRuntime;
@@ -16,6 +33,9 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Test cases for elasticsearch sink.
+ */
 public class TestCaseOfElasticsearchSink {
 
     private static final Logger log = Logger.getLogger(TestCaseOfElasticsearchEventTableIT.class);
@@ -35,8 +55,8 @@ public class TestCaseOfElasticsearchSink {
     }
 
 
-    @Test(testName = "elasticsearchRecordsInsertion", description = "Testing Records insertion.", enabled = true)
-    public void elasticsearchRecordsInsertion2() throws InterruptedException {
+    @Test(testName = "elasticsearchSinkTestCase", description = "Testing Records insertion.", enabled = true)
+    public void elasticsearchSinkTestCase01() throws InterruptedException {
         final TestAppender appender = new TestAppender();
         final Logger rootLogger = Logger.getRootLogger();
         rootLogger.setLevel(Level.DEBUG);
@@ -44,7 +64,7 @@ public class TestCaseOfElasticsearchSink {
         SiddhiManager siddhiManager = new SiddhiManager();
         String streams =
                 "@sink(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
-                        "index.name='stock_index', " +
+                        "index.name='stock_index3', " +
                         "@map(type='json', @payload(\"\"\"{\n" +
                         "   \"Stock Data\":{\n" +
                         "      \"Symbol\":\"{{symbol}}\",\n" +
