@@ -32,6 +32,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+/**
+ * Test cases for Elasticsearch store.
+ */
 public class TestCaseOfElasticsearchEventTableIT {
     private static final Logger log = Logger.getLogger(TestCaseOfElasticsearchEventTableIT.class);
     private static String hostname;
@@ -425,7 +428,7 @@ public class TestCaseOfElasticsearchEventTableIT {
         String query3 = "" +
                 "@info(name = 'query3')\n" +
                 "from TestStream[stock_table.symbol == symbol in stock_table]\n" +
-                "select a.symbol \n" +
+                "select symbol \n" +
                 "insert into AlertStream;";
 
         log.info(streams + query);
