@@ -214,11 +214,17 @@ public class ElasticsearchSink extends Sink {
             throws ConnectionUnavailableException {
         IndexRequest indexRequest = new IndexRequest(elasticsearchConfigs.getIndexName());
         try {
-            JsonArray jsonArray = new JsonParser().parse((String) payload).getAsJsonArray();
-            for (JsonElement jsonElement : jsonArray) {
-                indexRequest.source(jsonElement.toString(), XContentType.JSON);
-                elasticsearchConfigs.getBulkProcessor().add(indexRequest);
+            JsonElement parse = new JsonParser().parse((String) payload);
+            if (parse.isJsonArray()) {
+                JsonArray jsonArray = parse.getAsJsonArray();
+                for (JsonElement jsonElement : jsonArray) {
+                    indexRequest.source(jsonElement.toString(), XContentType.JSON);
+                    elasticsearchConfigs.getBulkProcessor().add(indexRequest);
+                }
                 logger.debug(payload + " has been successfully added.");
+            } else if (parse.isJsonObject()) {
+                indexRequest.source(parse.getAsJsonObject().toString(), XContentType.JSON);
+                elasticsearchConfigs.getBulkProcessor().add(indexRequest);
             }
         } catch (JsonSyntaxException e) {
             throw new ElasticsearchEventSinkException("Invalid json document, Please recheck the json mapping at" +
