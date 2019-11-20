@@ -71,7 +71,7 @@ public class TestCaseOfElasticsearchEventTableIT {
         String streams =
                 "define stream StockStream (symbol string, price float, volume long); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";
@@ -96,7 +96,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                 "define stream StockStream (symbol string, price float, volume long); \n" +
                         "define stream TestStream(symbol string); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";
@@ -163,7 +163,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                         "define stream UpdateStream (symbol string, price float, volume long); \n" +
                         "define stream TestStream(symbol string); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";
@@ -248,7 +248,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                         "define stream UpdateStream (symbol string, price float, volume long); \n" +
                         "define stream TestStream(symbol string); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";
@@ -332,7 +332,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                         "define stream UpdateStream (symbol string, price float, volume long); \n" +
                         "define stream TestStream(symbol string); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";
@@ -411,7 +411,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                         "define stream UpdateStream (symbol string, price float, volume long); \n" +
                         "define stream TestStream(symbol string); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";

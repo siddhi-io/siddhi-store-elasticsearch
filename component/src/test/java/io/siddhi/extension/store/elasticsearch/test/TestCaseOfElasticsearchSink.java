@@ -63,10 +63,10 @@ public class TestCaseOfElasticsearchSink {
         rootLogger.addAppender(appender);
         SiddhiManager siddhiManager = new SiddhiManager();
         String streams =
-                "@sink(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                "@sink(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index3', " +
                         "@map(type='json', @payload(\"\"\"{\n" +
-                        "   \"Stock Data\":{\n" +
+                        "   \"Stock_Data\":{\n" +
                         "      \"Symbol\":\"{{symbol}}\",\n" +
                         "      \"Price\":{{price}},\n" +
                         "      \"Volume\":{{volume}}\n" +
@@ -89,14 +89,14 @@ public class TestCaseOfElasticsearchSink {
             logMessages.add(message);
         }
         Assert.assertTrue(logMessages.contains("[{\n" +
-                "   \"Stock Data\":{\n" +
+                "   \"Stock_Data\":{\n" +
                 "      \"Symbol\":\"WSO2\",\n" +
                 "      \"Price\":55.6,\n" +
                 "      \"Volume\":7000\n" +
                 "   }\n" +
                 "}] has been successfully added."));
         Assert.assertTrue(logMessages.contains("[{\n" +
-                "   \"Stock Data\":{\n" +
+                "   \"Stock_Data\":{\n" +
                 "      \"Symbol\":\"MSFT2\",\n" +
                 "      \"Price\":57.6,\n" +
                 "      \"Volume\":9000\n" +
