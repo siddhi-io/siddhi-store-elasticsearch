@@ -36,12 +36,11 @@ import io.siddhi.core.util.transport.DynamicOptions;
 import io.siddhi.core.util.transport.OptionHolder;
 import io.siddhi.extension.store.elasticsearch.ElasticsearchConfigs;
 import io.siddhi.extension.store.elasticsearch.exceptions.ElasticsearchEventSinkException;
-import io.siddhi.extension.store.elasticsearch.exceptions.ElasticsearchEventTableException;
+import io.siddhi.extension.store.elasticsearch.utils.SiddhiIndexRequest;
 import io.siddhi.query.api.definition.StreamDefinition;
 import org.apache.log4j.Logger;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.alias.Alias;
-import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
@@ -61,7 +60,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                 "Elasticsearch sink implementation uses Elasticsearch indexing document for underlying " +
                 "data storage. The events that are published from the sink will be converted into elasticsearch index" +
                 " documents. The elasticsearch sink is connected to the Elastisearch server via the Elasticsearch " +
-                "Java High Level REST Client library. Unlike Elasticsearch store, we can customize the json document " +
+                "Java High Level REST Client library. By using this sink, we can customize the json document " +
                 "before it's stored in the elasticsearch.",
 
         parameters = {
@@ -76,7 +75,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                         type = {DataType.STRING}, optional = true, defaultValue = "http"),
                 @Parameter(name = "elasticsearch.member.list",
                         description = "The list of elasticsearch host names. in comma separated manner" +
-                                "https://hostname1:9200,https://hostname2:9200",
+                                "`https://hostname1:9200,https://hostname2:9200`",
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "null"),
                 @Parameter(name = "username",
@@ -164,7 +163,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
         },
         examples = {
                 @Example(syntax = "" +
-                        "@sink(type='elasticsearch', host='172.0.0.1', port='9200'," +
+                        "@sink(type='elasticsearch', hostname='172.0.0.1', port='9200'," +
                         "index.name='stock_index', " +
                         "@map(type='json', @payload(\"\"\"{\n" +
                         "   \"Stock Data\":{\n" +
@@ -174,9 +173,8 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                         "   }\n" +
                         "}\"\"\")))" +
                         "define stream stock_stream(symbol string, price float, volume long);",
-                        description = "In this example when user publish an event from the sink, it will create an " +
-                                "index called 'stock_index' if it does not already exist in the elasticsearch server " +
-                                "and saves the custom json document."
+                        description = "This will create an index called 'stock_index' if it does not already exist " +
+                                "in the elasticsearch server and saves the custom json document."
                 )
         }
 )
@@ -205,26 +203,28 @@ public class ElasticsearchSink extends Sink {
     protected StateFactory init(StreamDefinition streamDefinition, OptionHolder optionHolder,
                                 ConfigReader sinkConfigReader, SiddhiAppContext siddhiAppContext) {
         ElasticsearchConfigs.setLogger(logger);
-        elasticsearchConfigs = new ElasticsearchConfigs(streamDefinition, sinkConfigReader, siddhiAppContext, false);
+        elasticsearchConfigs = new ElasticsearchConfigs(this);
+        elasticsearchConfigs.init(streamDefinition, sinkConfigReader, siddhiAppContext);
         return null;
     }
 
     @Override
     public void publish(Object payload, DynamicOptions dynamicOptions, State state)
             throws ConnectionUnavailableException {
-        IndexRequest indexRequest = new IndexRequest(elasticsearchConfigs.getIndexName());
+        SiddhiIndexRequest siddhiIndexRequest = new SiddhiIndexRequest(payload, dynamicOptions,
+                elasticsearchConfigs.getIndexName());
         try {
             JsonElement parse = new JsonParser().parse((String) payload);
             if (parse.isJsonArray()) {
                 JsonArray jsonArray = parse.getAsJsonArray();
                 for (JsonElement jsonElement : jsonArray) {
-                    indexRequest.source(jsonElement.toString(), XContentType.JSON);
-                    elasticsearchConfigs.getBulkProcessor().add(indexRequest);
+                    siddhiIndexRequest.source(jsonElement.toString(), XContentType.JSON);
+                    elasticsearchConfigs.getBulkProcessor().add(siddhiIndexRequest);
                 }
                 logger.debug(payload + " has been successfully added.");
             } else if (parse.isJsonObject()) {
-                indexRequest.source(parse.getAsJsonObject().toString(), XContentType.JSON);
-                elasticsearchConfigs.getBulkProcessor().add(indexRequest);
+                siddhiIndexRequest.source(parse.getAsJsonObject().toString(), XContentType.JSON);
+                elasticsearchConfigs.getBulkProcessor().add(siddhiIndexRequest);
             }
         } catch (JsonSyntaxException e) {
             throw new ElasticsearchEventSinkException("Invalid json document, Please recheck the json mapping at" +
@@ -252,20 +252,18 @@ public class ElasticsearchSink extends Sink {
 
     @Override
     public void destroy() {
-
     }
 
-    private void createIndex(String definitionId) { //call at the connect
+    private void createIndex(String definitionId) throws ConnectionUnavailableException { //call at the connect
         try {
             if (elasticsearchConfigs.getRestHighLevelClient().indices().exists(
                     new GetIndexRequest(elasticsearchConfigs.getIndexName()), RequestOptions.DEFAULT)) {
                 logger.debug("Index: " + elasticsearchConfigs.getIndexName() + " has already being created for sink " +
-                        "id: " +
-                        definitionId + ".");
+                        "id: " + definitionId + ".");
                 return;
             }
         } catch (IOException e) {
-            throw new ElasticsearchEventTableException("Error while checking indices for sink id : '" +
+            throw new ConnectionUnavailableException("Error while checking indices for sink id : '" +
                     definitionId, e);
         }
         CreateIndexRequest request = new CreateIndexRequest(elasticsearchConfigs.getIndexName());

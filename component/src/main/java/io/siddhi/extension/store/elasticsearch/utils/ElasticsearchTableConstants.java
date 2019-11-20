@@ -23,7 +23,7 @@ package io.siddhi.extension.store.elasticsearch.utils;
  */
 public class ElasticsearchTableConstants {
 
-    public static final String ANNOTATION_ELEMENT_HOSTNAME = "host";
+    public static final String ANNOTATION_ELEMENT_HOSTNAME = "hostname";
     public static final String ANNOTATION_ELEMENT_PORT = "port";
     public static final String ANNOTATION_ELEMENT_SCHEME = "scheme";
     public static final String ANNOTATION_ELEMENT_USER = "username";

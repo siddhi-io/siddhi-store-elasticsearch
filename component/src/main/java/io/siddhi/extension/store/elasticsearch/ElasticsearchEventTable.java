@@ -74,7 +74,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                 "data storage. The events are converted to Elasticsearch index documents when the events are " +
                 "inserted into the elasticsearch store. Elasticsearch indexing documents are converted to events when" +
                 " the documents are read from Elasticsearch indexes. The internal store is connected to the " +
-                "Elastisearch server via the Elasticsearch Java High Level REST Client library.",
+                "Elasticsearch server via the Elasticsearch Java High Level REST Client library.",
         parameters = {
                 @Parameter(name = "hostname",
                         description = "The hostname of the Elasticsearch server.",
@@ -87,7 +87,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                         type = {DataType.STRING}, optional = true, defaultValue = "http"),
                 @Parameter(name = "elasticsearch.member.list",
                         description = "The list of elasticsearch host names. in comma separated manner" +
-                                "https://hostname1:9200,https://hostname2:9200",
+                                "`https://hostname1:9200,https://hostname2:9200`",
                         type = {DataType.STRING}, optional = true,
                         defaultValue = "null"),
                 @Parameter(name = "username",
@@ -176,7 +176,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
 
         examples = {
                 @Example(
-                        syntax = "@Store(type=\"elasticsearch\", host=\"localhost\", " +
+                        syntax = "@Store(type=\"elasticsearch\", hostname=\"localhost\", " +
                                 "username=\"elastic\", password=\"changeme\", index.name=\"mystocktable\", " +
                                 "field.length=\"symbol:100\", bulk.actions=\"5000\", bulk.size=\"1\", " +
                                 "concurrent.requests=\"2\", flush.interval=\"1\", backoff.policy.retry.no=\"3\", " +
@@ -191,7 +191,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                                 " index document ID is generated for it."
                 ),
                 @Example(
-                        syntax = "@Store(type=\"elasticsearch\", host=\"localhost\", " +
+                        syntax = "@Store(type=\"elasticsearch\", hostname=\"localhost\", " +
                                 "username=\"elastic\", password=\"changeme\", index.name=\"mystocktable\", " +
                                 "field.length=\"symbol:100\", bulk.actions=\"5000\", bulk.size=\"1\", " +
                                 "concurrent.requests=\"2\", flush.interval=\"1\", backoff.policy.retry.no=\"3\", " +
@@ -236,7 +236,8 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     protected void init(TableDefinition tableDefinition, ConfigReader configReader) {
 
         ElasticsearchConfigs.setLogger(logger);
-        elasticsearchConfigs = new ElasticsearchConfigs(tableDefinition, configReader, siddhiAppContext, true);
+        elasticsearchConfigs = new ElasticsearchConfigs();
+        elasticsearchConfigs.init(tableDefinition, configReader, siddhiAppContext);
         List<Annotation> typeMappingsAnnotations = elasticsearchConfigs.getStoreAnnotation().getAnnotations(
                 ANNOTATION_TYPE_MAPPINGS);
         Annotation primaryKeyAnnotation = AnnotationHelper.getAnnotation(SiddhiConstants.ANNOTATION_PRIMARY_KEY,
@@ -264,6 +265,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
      */
     @Override
     protected void add(List<Object[]> records) throws ConnectionUnavailableException {
+
         for (Object[] record : records) {
             if (elasticsearchConfigs.getPayloadIndexOfIndexName() != -1 &&
                     (elasticsearchConfigs.getIndexName() == null || !elasticsearchConfigs.getIndexName().equals(

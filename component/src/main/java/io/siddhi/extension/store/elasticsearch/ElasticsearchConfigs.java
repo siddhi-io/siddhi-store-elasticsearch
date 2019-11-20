@@ -22,7 +22,9 @@ import io.siddhi.core.exception.SiddhiAppCreationException;
 import io.siddhi.core.util.SiddhiConstants;
 import io.siddhi.core.util.config.ConfigReader;
 import io.siddhi.extension.store.elasticsearch.exceptions.ElasticsearchEventTableException;
+import io.siddhi.extension.store.elasticsearch.sink.ElasticsearchSink;
 import io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableUtils;
+import io.siddhi.extension.store.elasticsearch.utils.SiddhiIndexRequest;
 import io.siddhi.query.api.annotation.Annotation;
 import io.siddhi.query.api.definition.AbstractDefinition;
 import io.siddhi.query.api.definition.Attribute;
@@ -36,6 +38,7 @@ import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.log4j.Logger;
+import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkProcessor;
@@ -142,21 +145,36 @@ public class ElasticsearchConfigs {
     private String listOfHostnames;
     private String definitionId;
     private Annotation storeAnnotation;
+    private ElasticsearchSink elasticsearchSink;
 
-    public ElasticsearchConfigs(AbstractDefinition definition, ConfigReader configReader,
-                                SiddhiAppContext siddhiAppContext, boolean isTable) {
+    public ElasticsearchConfigs() { // calls from ElasticSearchEventTable
+
+    }
+
+    public ElasticsearchConfigs(ElasticsearchSink elasticsearchSink) { // calls from ElasticSearchSink
+        this.elasticsearchSink = elasticsearchSink;
+    }
+
+    public static void setLogger(Logger logger) {
+        ElasticsearchConfigs.logger = logger;
+    }
+
+    public void init(AbstractDefinition definition, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {
 
         this.definitionId = definition.getId();
         this.attributes = definition.getAttributeList();
         String type;
-        if (isTable) {
+        BulkProcessorListener bulkProcessorListener;
+        if (elasticsearchSink == null) { // to check whether a sink or table
             storeAnnotation = AnnotationHelper.getAnnotation(SiddhiConstants.ANNOTATION_STORE,
                     definition.getAnnotations());
             type = "table";
+            bulkProcessorListener = new BulkProcessorListener();
         } else {
             storeAnnotation = AnnotationHelper.getAnnotation(SiddhiConstants.ANNOTATION_SINK,
                     definition.getAnnotations());
             type = "sink";
+            bulkProcessorListener = new BulkProcessorListener(elasticsearchSink);
         }
         if (storeAnnotation != null) {
             indexName = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_NAME);
@@ -377,7 +395,7 @@ public class ElasticsearchConfigs {
         BulkProcessor.Builder bulkProcessorBuilder = BulkProcessor.builder(
                 (request, bulkListener) ->
                         restHighLevelClient.bulkAsync(request, RequestOptions.DEFAULT, bulkListener),
-                new BulkProcessorListener());
+                bulkProcessorListener);
         bulkProcessorBuilder.setBulkActions(bulkActions);
         bulkProcessorBuilder.setBulkSize(new ByteSizeValue(bulkSize, ByteSizeUnit.MB));
         bulkProcessorBuilder.setConcurrentRequests(concurrentRequests);
@@ -396,6 +414,10 @@ public class ElasticsearchConfigs {
 
     public RestHighLevelClient getRestHighLevelClient() {
         return restHighLevelClient;
+    }
+
+    public void setRestHighLevelClient(RestHighLevelClient restHighLevelClient) {
+        this.restHighLevelClient = restHighLevelClient;
     }
 
     public List<Attribute> getAttributes() {
@@ -446,16 +468,17 @@ public class ElasticsearchConfigs {
         return storeAnnotation;
     }
 
-    public void setRestHighLevelClient(RestHighLevelClient restHighLevelClient) {
-
-        this.restHighLevelClient = restHighLevelClient;
-    }
-
-    public static void setLogger(Logger logger) {
-        ElasticsearchConfigs.logger = logger;
-    }
-
     static class BulkProcessorListener implements BulkProcessor.Listener {
+
+        private ElasticsearchSink elasticsearchSink;
+
+        private BulkProcessorListener(ElasticsearchSink elasticsearchSink) {
+            this.elasticsearchSink = elasticsearchSink;
+        }
+
+        private BulkProcessorListener() {
+
+        }
 
         @Override
         public void beforeBulk(long executionId, BulkRequest request) {
@@ -495,6 +518,15 @@ public class ElasticsearchConfigs {
         @Override
         public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
 
+            if (request.requests().size() > 0) {
+                if (failure instanceof Exception && request.requests().get(0) instanceof SiddhiIndexRequest) {
+                    for (DocWriteRequest docWriteRequest : request.requests()) {
+                        SiddhiIndexRequest siddhiIndexRequest = (SiddhiIndexRequest) docWriteRequest;
+                        elasticsearchSink.onError(siddhiIndexRequest.getPayload(), siddhiIndexRequest
+                                .getDynamicOptions(), (Exception) failure);
+                    }
+                }
+            }
             logger.error("Failed to execute bulk", failure);
         }
     }
