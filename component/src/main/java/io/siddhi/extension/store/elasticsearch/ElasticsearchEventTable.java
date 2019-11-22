@@ -235,7 +235,6 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     @Override
     protected void init(TableDefinition tableDefinition, ConfigReader configReader) {
 
-        ElasticsearchConfigs.setLogger(logger);
         elasticsearchConfigs = new ElasticsearchConfigs();
         elasticsearchConfigs.init(tableDefinition, configReader, siddhiAppContext);
         List<Annotation> typeMappingsAnnotations = elasticsearchConfigs.getStoreAnnotation().getAnnotations(

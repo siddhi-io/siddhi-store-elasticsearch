@@ -116,7 +116,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
  */
 public class ElasticsearchConfigs {
 
-    private static Logger logger;
+    private static final Logger logger = Logger.getLogger(ElasticsearchConfigs.class);
     private RestHighLevelClient restHighLevelClient;
     private List<Attribute> attributes;
     private String hostname = DEFAULT_HOSTNAME;
@@ -153,10 +153,6 @@ public class ElasticsearchConfigs {
 
     public ElasticsearchConfigs(ElasticsearchSink elasticsearchSink) { // calls from ElasticSearchSink
         this.elasticsearchSink = elasticsearchSink;
-    }
-
-    public static void setLogger(Logger logger) {
-        ElasticsearchConfigs.logger = logger;
     }
 
     public void init(AbstractDefinition definition, ConfigReader configReader, SiddhiAppContext siddhiAppContext) {

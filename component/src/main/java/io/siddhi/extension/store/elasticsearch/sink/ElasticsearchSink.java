@@ -202,7 +202,6 @@ public class ElasticsearchSink extends Sink {
     @Override
     protected StateFactory init(StreamDefinition streamDefinition, OptionHolder optionHolder,
                                 ConfigReader sinkConfigReader, SiddhiAppContext siddhiAppContext) {
-        ElasticsearchConfigs.setLogger(logger);
         elasticsearchConfigs = new ElasticsearchConfigs(this);
         elasticsearchConfigs.init(streamDefinition, sinkConfigReader, siddhiAppContext);
         return null;
