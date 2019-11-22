@@ -245,7 +245,7 @@ public class ElasticsearchSink extends Sink {
         try {
             elasticsearchConfigs.getRestHighLevelClient().close();
         } catch (IOException e) {
-            throw new ElasticsearchEventSinkException("Error while closing the connection.", e);
+            throw new ElasticsearchEventSinkException("An error occurred while closing the elasticsearch client.", e);
         } finally {
             elasticsearchConfigs.setRestHighLevelClient(null);
         }
@@ -261,12 +261,12 @@ public class ElasticsearchSink extends Sink {
                     new GetIndexRequest(elasticsearchConfigs.getIndexName()), RequestOptions.DEFAULT)) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Index: " + elasticsearchConfigs.getIndexName() + " has already being created for" +
-                            " sink id: " + definitionId + ".");
+                            " stream id: " + definitionId + ".");
                 }
                 return;
             }
         } catch (IOException e) {
-            throw new ConnectionUnavailableException("Error while checking indices for sink id : '" +
+            throw new ConnectionUnavailableException("Error while checking indices for stream id : '" +
                     definitionId, e);
         }
         CreateIndexRequest request = new CreateIndexRequest(elasticsearchConfigs.getIndexName());
@@ -279,13 +279,13 @@ public class ElasticsearchSink extends Sink {
         try {
             elasticsearchConfigs.getRestHighLevelClient().indices().create(request, RequestOptions.DEFAULT);
             if (logger.isDebugEnabled()) {
-                logger.debug("A sink id: " + definitionId + " is created with the provided information.");
+                logger.debug("A stream id: " + definitionId + " is created with the provided information.");
             }
         } catch (IOException e) {
-            throw new ElasticsearchEventSinkException("Error while creating indices for sink id : '" +
+            throw new ElasticsearchEventSinkException("Error while creating indices for stream id : '" +
                     definitionId, e);
         } catch (ElasticsearchStatusException e) {
-            logger.error("Elasticsearch status exception occurred while creating index for sink id: " +
+            logger.error("Elasticsearch status exception occurred while creating index for stream id: " +
                     definitionId, e);
         }
     }
