@@ -220,7 +220,9 @@ public class ElasticsearchSink extends Sink {
                     siddhiIndexRequest.source(jsonElement.toString(), XContentType.JSON);
                     elasticsearchConfigs.getBulkProcessor().add(siddhiIndexRequest);
                 }
-                logger.debug(payload + " has been successfully added.");
+                if (logger.isDebugEnabled()) {
+                    logger.debug(payload + " has been successfully added.");
+                }
             } else if (parse.isJsonObject()) {
                 siddhiIndexRequest.source(parse.getAsJsonObject().toString(), XContentType.JSON);
                 elasticsearchConfigs.getBulkProcessor().add(siddhiIndexRequest);
@@ -257,8 +259,10 @@ public class ElasticsearchSink extends Sink {
         try {
             if (elasticsearchConfigs.getRestHighLevelClient().indices().exists(
                     new GetIndexRequest(elasticsearchConfigs.getIndexName()), RequestOptions.DEFAULT)) {
-                logger.debug("Index: " + elasticsearchConfigs.getIndexName() + " has already being created for sink " +
-                        "id: " + definitionId + ".");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Index: " + elasticsearchConfigs.getIndexName() + " has already being created for" +
+                            " sink id: " + definitionId + ".");
+                }
                 return;
             }
         } catch (IOException e) {
@@ -274,7 +278,9 @@ public class ElasticsearchSink extends Sink {
         }
         try {
             elasticsearchConfigs.getRestHighLevelClient().indices().create(request, RequestOptions.DEFAULT);
-            logger.debug("A sink id: " + definitionId + " is created with the provided information.");
+            if (logger.isDebugEnabled()) {
+                logger.debug("A sink id: " + definitionId + " is created with the provided information.");
+            }
         } catch (IOException e) {
             throw new ElasticsearchEventSinkException("Error while creating indices for sink id : '" +
                     definitionId, e);

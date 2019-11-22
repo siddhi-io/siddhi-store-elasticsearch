@@ -531,9 +531,10 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         try {
             if (elasticsearchConfigs.getRestHighLevelClient().indices()
                     .exists(new GetIndexRequest(elasticsearchConfigs.getIndexName()), RequestOptions.DEFAULT)) {
-                logger.debug(
-                        "Index: " + elasticsearchConfigs.getIndexName() + " has already being created for table id: " +
-                                tableDefinition.getId() + ".");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Index: " + elasticsearchConfigs.getIndexName() + " has already being created for " +
+                            "table id: " + tableDefinition.getId() + ".");
+                }
                 return;
             }
         } catch (IOException e) {
@@ -598,7 +599,9 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         }
         try {
             elasticsearchConfigs.getRestHighLevelClient().indices().create(request, RequestOptions.DEFAULT);
-            logger.debug("A table id: " + tableDefinition.getId() + " is created with the provided information.");
+            if (logger.isDebugEnabled()) {
+                logger.debug("A table id: " + tableDefinition.getId() + " is created with the provided information.");
+            }
         } catch (IOException e) {
             throw new ElasticsearchEventTableException("Error while creating indices for table id : '" +
                     tableDefinition.getId(), e);

@@ -480,7 +480,9 @@ public class ElasticsearchConfigs {
         public void beforeBulk(long executionId, BulkRequest request) {
 
             int numberOfActions = request.numberOfActions();
-            logger.debug("Executing bulk [{" + executionId + "}] with {" + numberOfActions + "} requests");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Executing bulk [{" + executionId + "}] with {" + numberOfActions + "} requests");
+            }
         }
 
         @Override
