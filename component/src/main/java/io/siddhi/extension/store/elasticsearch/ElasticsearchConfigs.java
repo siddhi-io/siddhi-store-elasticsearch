@@ -165,12 +165,12 @@ public class ElasticsearchConfigs {
             storeAnnotation = AnnotationHelper.getAnnotation(SiddhiConstants.ANNOTATION_STORE,
                     definition.getAnnotations());
             type = "table";
-            bulkProcessorListener = new BulkProcessorListener();
+            bulkProcessorListener = new BulkProcessorListener(definitionId);
         } else {
             storeAnnotation = AnnotationHelper.getAnnotation(SiddhiConstants.ANNOTATION_SINK,
                     definition.getAnnotations());
             type = "sink";
-            bulkProcessorListener = new BulkProcessorListener(elasticsearchSink);
+            bulkProcessorListener = new BulkProcessorListener(elasticsearchSink, definitionId);
         }
         if (storeAnnotation != null) {
             indexName = storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_NAME);
@@ -324,8 +324,15 @@ public class ElasticsearchConfigs {
                 listOfHostnames = storeAnnotation.getElement(ANNOTATION_ELEMENT_MEMBER_LIST);
             }
         } else {
-            throw new SiddhiAppCreationException("Elasticsearch Store annotation list null for " + type +
-                    " id : '" + definition.getId() + "', required properties cannot be resolved.");
+            if (elasticsearchSink == null) {
+                throw new SiddhiAppCreationException("Elasticsearch Store annotation list is not provided for " + type +
+                        " id : '" + definition.getId() + "', required properties cannot be resolved without required " +
+                        "parameters.");
+            } else {
+                throw new SiddhiAppCreationException("Elasticsearch Sink annotation list is not provided for " + type +
+                        " id : '" + definition.getId() + "', required properties cannot be resolved without required " +
+                        "parameters.");
+            }
         }
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY,
@@ -339,8 +346,8 @@ public class ElasticsearchConfigs {
                     URL domain = new URL(hostNameList[i]);
                     httpHostList[i] = new HttpHost(domain.getHost(), domain.getPort(), domain.getProtocol());
                 } catch (MalformedURLException e) {
-                    throw new SiddhiAppCreationException("Provided elastic search hostname url list is " +
-                            "malformed of " + type + " id : '" + definition.getId() + ".", e);
+                    throw new SiddhiAppCreationException("Provided elasticsearch hostname url(" + hostNameList[i] +
+                            ") is malformed of " + type + " id : '" + definition.getId() + ".", e);
                 }
             }
         } else {
@@ -467,18 +474,19 @@ public class ElasticsearchConfigs {
     static class BulkProcessorListener implements BulkProcessor.Listener {
 
         private ElasticsearchSink elasticsearchSink;
+        private String elasticSearchID;
 
-        private BulkProcessorListener(ElasticsearchSink elasticsearchSink) {
+        private BulkProcessorListener(ElasticsearchSink elasticsearchSink, String elasticSearchID) {
             this.elasticsearchSink = elasticsearchSink;
+            this.elasticSearchID = elasticSearchID;
         }
 
-        private BulkProcessorListener() {
-
+        private BulkProcessorListener(String elasticSearchID) {
+            this.elasticSearchID = elasticSearchID;
         }
 
         @Override
         public void beforeBulk(long executionId, BulkRequest request) {
-
             int numberOfActions = request.numberOfActions();
             if (logger.isDebugEnabled()) {
                 logger.debug("Executing bulk [{" + executionId + "}] with {" + numberOfActions + "} requests");
@@ -487,7 +495,6 @@ public class ElasticsearchConfigs {
 
         @Override
         public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
-
             if (response.hasFailures()) {
                 logger.warn("Bulk [{}] executed with failures for executionId: " + executionId + ", failure : "
                         + response.buildFailureMessage() + ", status : " + response.status().getStatus());
@@ -515,7 +522,6 @@ public class ElasticsearchConfigs {
 
         @Override
         public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
-
             if (request.requests().size() > 0) {
                 if (failure instanceof Exception && request.requests().get(0) instanceof SiddhiIndexRequest) {
                     for (DocWriteRequest docWriteRequest : request.requests()) {
@@ -525,7 +531,13 @@ public class ElasticsearchConfigs {
                     }
                 }
             }
-            logger.error("Failed to execute bulk", failure);
+            if (elasticsearchSink == null) {
+                logger.error("Failed to execute bulk request at Elasticsearch table :" + elasticSearchID
+                        , failure);
+            } else {
+                logger.error("Failed to execute bulk request at Elasticsearch sink :" + elasticSearchID
+                        , failure);
+            }
         }
     }
 
