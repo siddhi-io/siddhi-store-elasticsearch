@@ -32,6 +32,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+/**
+ * Test cases for Elasticsearch store.
+ */
 public class TestCaseOfElasticsearchEventTableIT {
     private static final Logger log = Logger.getLogger(TestCaseOfElasticsearchEventTableIT.class);
     private static String hostname;
@@ -68,7 +71,7 @@ public class TestCaseOfElasticsearchEventTableIT {
         String streams =
                 "define stream StockStream (symbol string, price float, volume long); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";
@@ -93,7 +96,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                 "define stream StockStream (symbol string, price float, volume long); \n" +
                         "define stream TestStream(symbol string); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";
@@ -160,7 +163,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                         "define stream UpdateStream (symbol string, price float, volume long); \n" +
                         "define stream TestStream(symbol string); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";
@@ -245,7 +248,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                         "define stream UpdateStream (symbol string, price float, volume long); \n" +
                         "define stream TestStream(symbol string); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";
@@ -329,7 +332,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                         "define stream UpdateStream (symbol string, price float, volume long); \n" +
                         "define stream TestStream(symbol string); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";
@@ -408,7 +411,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                         "define stream UpdateStream (symbol string, price float, volume long); \n" +
                         "define stream TestStream(symbol string); \n" +
                         "\n" +
-                        "@store(type='elasticsearch', host='" + hostname + "', port='" + port + "', " +
+                        "@store(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
                         "index.name='stock_index')\n" +
                         "@primaryKey('symbol') \n" +
                         "define table stock_table(symbol string, price float, volume long);";
@@ -425,7 +428,7 @@ public class TestCaseOfElasticsearchEventTableIT {
         String query3 = "" +
                 "@info(name = 'query3')\n" +
                 "from TestStream[stock_table.symbol == symbol in stock_table]\n" +
-                "select a.symbol \n" +
+                "select symbol \n" +
                 "insert into AlertStream;";
 
         log.info(streams + query);

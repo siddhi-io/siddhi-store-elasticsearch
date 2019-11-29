@@ -5,7 +5,8 @@
 <suite name="Siddhi-Store-Elasticsearch-Test-Suite" parallel="false">
     <test name="Siddhi-store-elasticsearch-tests" preserve-order="true" parallel="false">
         <classes>
-            <class name="io.siddhi.extension.store.elasticsearch.TestCaseOfElasticsearchEventTableIT"/>
+            <class name="io.siddhi.extension.store.elasticsearch.test.TestCaseOfElasticsearchEventTableIT"/>
+            <class name="io.siddhi.extension.store.elasticsearch.test.TestCaseOfElasticsearchSink"/>
         </classes>
     </test>
 </suite>
