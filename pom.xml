@@ -188,7 +188,7 @@
         <lucene.core.version>7.2.1</lucene.core.version>
         <http.asyncc.lient.version>4.1.2</http.asyncc.lient.version>
         <http.nio.version>4.4.5</http.nio.version>
-        <http.client.version>4.5.2</http.client.version>
+        <http.client.version>4.5.13</http.client.version>
         <http.client.version.range>(4.5.2,5.0.0)</http.client.version.range>
         <http.core.version>4.4.5</http.core.version>
         <http.core.version.range>(4.4.5,5.0.0)</http.core.version.range>
