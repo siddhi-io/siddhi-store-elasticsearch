@@ -195,7 +195,7 @@
         <commons.codec.version>1.10</commons.codec.version>
         <commons.logging.version>1.2</commons.logging.version>
         <commons.logging.version.range>(1.2,2)</commons.logging.version.range>
-        <log4j.api.version>2.11.1</log4j.api.version>
+        <log4j.api.version>2.15.0</log4j.api.version>
         <log4j.core.version>2.11.1</log4j.core.version>
         <log4j.to.slf4j.version>2.11.1</log4j.to.slf4j.version>
         <carbon.transport.version>4.4.15</carbon.transport.version>
