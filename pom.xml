@@ -182,8 +182,8 @@
         <siddhi.version>5.1.5</siddhi.version>
         <siddhi.version.range>(5.0.0,6.0.0)</siddhi.version.range>
         <testng.version>6.11</testng.version>
-        <elasticsearch.version>7.0.0</elasticsearch.version>
-        <elasticsearch.version.range>[7.0.0,8.0.0)</elasticsearch.version.range>
+        <elasticsearch.version>7.16.2</elasticsearch.version>
+        <elasticsearch.version.range>[7.16.2,8.0.0)</elasticsearch.version.range>
         <joda.time.version>2.9.9</joda.time.version>
         <lucene.core.version>7.2.1</lucene.core.version>
         <http.asyncc.lient.version>4.1.2</http.asyncc.lient.version>
@@ -195,9 +195,9 @@
         <commons.codec.version>1.10</commons.codec.version>
         <commons.logging.version>1.2</commons.logging.version>
         <commons.logging.version.range>(1.2,2)</commons.logging.version.range>
-        <log4j.api.version>2.11.1</log4j.api.version>
-        <log4j.core.version>2.11.1</log4j.core.version>
-        <log4j.to.slf4j.version>2.11.1</log4j.to.slf4j.version>
+        <log4j.api.version>2.17.0</log4j.api.version>
+        <log4j.core.version>2.17.0</log4j.core.version>
+        <log4j.to.slf4j.version>2.17.0</log4j.to.slf4j.version>
         <carbon.transport.version>4.4.15</carbon.transport.version>
         <siddhi.map.json.version>5.0.2</siddhi.map.json.version>
         <siddhi.map.xml.version>5.0.2</siddhi.map.xml.version>

@@ -38,14 +38,15 @@ import io.siddhi.extension.store.elasticsearch.ElasticsearchConfigs;
 import io.siddhi.extension.store.elasticsearch.exceptions.ElasticsearchEventSinkException;
 import io.siddhi.extension.store.elasticsearch.utils.SiddhiIndexRequest;
 import io.siddhi.query.api.definition.StreamDefinition;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.xcontent.XContentType;
 
 import java.io.IOException;
 
@@ -181,7 +182,8 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
 
 public class ElasticsearchSink extends Sink {
 
-    private static final Logger logger = Logger.getLogger(ElasticsearchSink.class);
+    private static final Logger logger = LogManager.getLogger(ElasticsearchSink.class);
+
     private ElasticsearchConfigs elasticsearchConfigs;
 
     @Override
