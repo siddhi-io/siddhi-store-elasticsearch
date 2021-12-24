@@ -38,7 +38,8 @@ import io.siddhi.query.api.annotation.Element;
 import io.siddhi.query.api.definition.Attribute;
 import io.siddhi.query.api.definition.TableDefinition;
 import io.siddhi.query.api.util.AnnotationHelper;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -48,8 +49,8 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.xcontent.XContentBuilder;
+import org.elasticsearch.xcontent.XContentFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -221,7 +222,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
 
 public class ElasticsearchEventTable extends AbstractRecordTable {
 
-    private static final Logger logger = Logger.getLogger(ElasticsearchEventTable.class);
+    private static final Logger logger = LogManager.getLogger(ElasticsearchEventTable.class);
     private ElasticsearchConfigs elasticsearchConfigs;
     private Map<String, String> typeMappings = new HashMap<>();
     private List<String> primaryKeys;
