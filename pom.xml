@@ -196,7 +196,7 @@
         <commons.logging.version>1.2</commons.logging.version>
         <commons.logging.version.range>(1.2,2)</commons.logging.version.range>
         <log4j.api.version>2.17.0</log4j.api.version>
-        <log4j.core.version>2.17.0</log4j.core.version>
+        <log4j.core.version>2.17.1</log4j.core.version>
         <log4j.to.slf4j.version>2.17.0</log4j.to.slf4j.version>
         <carbon.transport.version>4.4.15</carbon.transport.version>
         <siddhi.map.json.version>5.0.2</siddhi.map.json.version>
