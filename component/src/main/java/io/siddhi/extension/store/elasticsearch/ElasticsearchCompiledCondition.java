@@ -24,6 +24,7 @@ import io.siddhi.core.util.collection.operator.CompiledCondition;
  * This class represents the compiled condition specific to Elasticsearch record tables.
  */
 public class ElasticsearchCompiledCondition implements CompiledCondition {
+    private static final long serialVersionUID = 1L;
     private String compiledQuery;
 
     public ElasticsearchCompiledCondition(String compiledQuery) {

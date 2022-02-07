@@ -17,8 +17,15 @@
  */
 package io.siddhi.extension.store.elasticsearch.test.utils;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Core;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
+import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
+import org.apache.logging.log4j.core.config.plugins.PluginElement;
+import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,26 +33,35 @@ import java.util.List;
 /**
  * Test appender to receive logs.
  */
-public class TestAppender extends AppenderSkeleton {
-    private final List<LoggingEvent> log = new ArrayList<>();
+@Plugin(name = "TestAppender",
+        category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
+public class TestAppender extends AbstractAppender {
 
-    @Override
-    public boolean requiresLayout() {
-        return false;
+    private final List<String> log = new ArrayList<>();
+
+    public TestAppender(String name, Filter filter) {
+
+        super(name, filter, null);
+    }
+
+    @PluginFactory
+    public static TestAppender createAppender(
+            @PluginAttribute("name") String name,
+            @PluginElement("Filter") Filter filter) {
+
+        return new TestAppender(name, filter);
     }
 
     @Override
-    protected void append(final LoggingEvent loggingEvent) {
-        if (loggingEvent.getLoggerName().equals("io.siddhi.extension.store.elasticsearch.sink.ElasticsearchSink")) {
-            log.add(loggingEvent);
-        }
+    public void append(LogEvent event) {
+
+        log.add(event.getMessage().getFormattedMessage());
+
     }
 
-    @Override
-    public void close() {
-    }
-
-    public List<LoggingEvent> getLog() {
-        return new ArrayList<>(log);
+    public List<String> getLog() {
+        List<String> clone = new ArrayList<>(log);
+        log.clear();
+        return clone;
     }
 }
