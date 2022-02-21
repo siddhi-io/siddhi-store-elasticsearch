@@ -22,9 +22,9 @@ import io.siddhi.core.SiddhiManager;
 import io.siddhi.core.stream.input.InputHandler;
 import io.siddhi.extension.store.elasticsearch.test.utils.ElasticsearchUtils;
 import io.siddhi.extension.store.elasticsearch.test.utils.TestAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class TestCaseOfElasticsearchSink {
 
-    private static final Logger log = Logger.getLogger(TestCaseOfElasticsearchEventTableIT.class);
+    private static final Logger log = (Logger) LogManager.getLogger(TestCaseOfElasticsearchEventTableIT.class);
     private static String hostname;
     private static String port;
 
@@ -57,10 +57,10 @@ public class TestCaseOfElasticsearchSink {
 
     @Test(testName = "elasticsearchSinkTestCase", description = "Testing Records insertion.", enabled = true)
     public void elasticsearchSinkTestCase01() throws InterruptedException {
-        final TestAppender appender = new TestAppender();
-        final Logger rootLogger = Logger.getRootLogger();
-        rootLogger.setLevel(Level.DEBUG);
-        rootLogger.addAppender(appender);
+        TestAppender appender = new TestAppender("TestAppender", null);
+        final Logger logger = (Logger) LogManager.getRootLogger();
+        logger.setLevel(Level.ALL);
+        logger.addAppender(appender);
         SiddhiManager siddhiManager = new SiddhiManager();
         String streams =
                 "@sink(type='elasticsearch', hostname='" + hostname + "', port='" + port + "', " +
@@ -82,10 +82,14 @@ public class TestCaseOfElasticsearchSink {
         insertStockStream.send(new Object[]{"MSFT2", 57.6F, 9000L});
         Thread.sleep(1000);
         siddhiAppRuntime.shutdown();
-        final List<LoggingEvent> log = appender.getLog();
+        final List<String> loggedEvents = ((TestAppender) logger.getAppenders().
+                get("TestAppender")).getLog();
         List<String> logMessages = new ArrayList<>();
-        for (LoggingEvent logEvent : log) {
-            String message = String.valueOf(logEvent.getMessage());
+        for (String logEvent : loggedEvents) {
+            String message = String.valueOf(logEvent);
+            if (message.contains(":")) {
+                message = message.split(":")[1].trim();
+            }
             logMessages.add(message);
         }
         Assert.assertTrue(logMessages.contains("[{\n" +
