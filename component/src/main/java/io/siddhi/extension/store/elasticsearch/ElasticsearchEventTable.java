@@ -271,7 +271,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     (elasticsearchConfigs.getIndexName() == null || !elasticsearchConfigs.getIndexName().equals(
                             record[elasticsearchConfigs.getPayloadIndexOfIndexName()]))) {
                 elasticsearchConfigs.setIndexName((String) record[elasticsearchConfigs.getPayloadIndexOfIndexName()]);
-                String indexNameInLowerCase = elasticsearchConfigs.getIndexName().toLowerCase(Locale.getDefault());
+                String indexNameInLowerCase = elasticsearchConfigs.getIndexName().toLowerCase(Locale.ROOT);
                 if (!elasticsearchConfigs.getIndexName().equals(indexNameInLowerCase)) {
                     logger.warn("Dynamic Index name : " + elasticsearchConfigs.getIndexName() + " must be in lower " +
                             "case in Siddhi application " + siddhiAppContext.getName() + ", hence changing it to " +

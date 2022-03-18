@@ -118,6 +118,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
 public class ElasticsearchConfigs {
 
     private static final Logger logger = LogManager.getLogger(ElasticsearchConfigs.class);
+    private static final long serialVersionUID = 6106269076155338045L;
     private RestHighLevelClient restHighLevelClient;
     private List<Attribute> attributes;
     private String hostname = DEFAULT_HOSTNAME;
@@ -187,11 +188,13 @@ public class ElasticsearchConfigs {
             indexName = ElasticsearchTableUtils.isEmpty(indexName) &&
                     payloadIndexOfIndexName == -1 ? definition.getId() : indexName;
 
-            String indexNameInLowerCase = indexName.toLowerCase(Locale.getDefault());
+            String indexNameInLowerCase = indexName.toLowerCase(Locale.ROOT);
             if (!indexName.equals(indexNameInLowerCase)) {
-                logger.warn("Index name : " + indexName + " must be in lower case in Siddhi application " +
-                        siddhiAppContext.getName() + ", hence changing it to lower case. New index name is " +
-                        indexNameInLowerCase);
+                logger.warn("Index name : " + indexName.replaceAll("[\r\n]", "") +
+                        " must be in lower case in Siddhi application " +
+                        siddhiAppContext.getName().replaceAll("[\r\n]", "") +
+                        ", hence changing it to lower case. New index name is " +
+                        indexNameInLowerCase.replaceAll("[\r\n]", ""));
                 indexName = indexNameInLowerCase;
             }
 
