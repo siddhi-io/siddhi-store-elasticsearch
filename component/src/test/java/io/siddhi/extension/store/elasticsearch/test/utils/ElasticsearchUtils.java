@@ -1,13 +1,12 @@
 package io.siddhi.extension.store.elasticsearch.test.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class ElasticsearchUtils {
-    private static final Logger log = LogManager.getLogger(ElasticsearchUtils.class);
+    private static final Logger log = Logger.getLogger(ElasticsearchUtils.class);
 
     /**
      * Utility for get Docker running host

@@ -138,6 +138,20 @@
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
             </dependency>
+
+            <!-- Used only for running tests -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.test.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.test.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <scm>
@@ -191,6 +205,7 @@
         <commons.logging.version>1.2</commons.logging.version>
         <commons.logging.version.range>(1.2,2)</commons.logging.version.range>
         <log4j.version>2.17.1</log4j.version>
+        <log4j.test.version>2.11.1</log4j.test.version>
         <carbon.transport.version>4.4.15</carbon.transport.version>
         <siddhi.map.json.version>5.0.2</siddhi.map.json.version>
         <siddhi.map.xml.version>5.0.2</siddhi.map.xml.version>

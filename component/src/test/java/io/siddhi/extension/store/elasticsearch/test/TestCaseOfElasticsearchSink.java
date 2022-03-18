@@ -23,9 +23,8 @@ import io.siddhi.core.stream.input.InputHandler;
 import io.siddhi.extension.store.elasticsearch.test.utils.ElasticsearchUtils;
 import io.siddhi.extension.store.elasticsearch.test.utils.TestAppender;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -39,7 +38,7 @@ import java.util.List;
  */
 public class TestCaseOfElasticsearchSink {
 
-    private static final Logger log = LogManager.getLogger(TestCaseOfElasticsearchEventTableIT.class);
+    private static final Logger log = Logger.getLogger(TestCaseOfElasticsearchEventTableIT.class);
     private static String hostname;
     private static String port;
 
@@ -59,7 +58,7 @@ public class TestCaseOfElasticsearchSink {
     @Test(testName = "elasticsearchSinkTestCase", description = "Testing Records insertion.", enabled = true)
     public void elasticsearchSinkTestCase01() throws InterruptedException {
         final TestAppender appender = new TestAppender();
-        final Logger rootLogger = LogManager.getRootLogger();
+        final Logger rootLogger = Logger.getRootLogger();
         rootLogger.setLevel(Level.DEBUG);
         rootLogger.addAppender(appender);
         SiddhiManager siddhiManager = new SiddhiManager();
