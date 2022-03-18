@@ -56,10 +56,6 @@
             <artifactId>log4j-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-to-slf4j</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
         </dependency>
@@ -274,7 +270,6 @@
                             org.elasticsearch.*,
                             org.apache.http.*,
                             org.apache.lucene.*,
-                            org.apache.logging.log4j.*,
                             org.joda.time.*,
                             com.carrotsearch.hppc.*,
                             org.apache.commons.codec.*,
@@ -288,6 +283,7 @@
                             org.apache.http.*,
                             org.apache.lucene.*,
                             org.joda.time.*,
+                            org.apache.logging.log4j.*,
                             io.siddhi.core.*;version="${siddhi.version.range}",
                             io.siddhi.annotation.*;version="${siddhi.version.range}",
                             io.siddhi.query.api.*;version="${siddhi.version.range}",

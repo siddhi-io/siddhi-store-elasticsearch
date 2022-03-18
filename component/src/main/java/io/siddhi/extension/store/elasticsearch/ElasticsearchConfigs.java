@@ -37,7 +37,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -49,7 +50,7 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
-import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.core.TimeValue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -116,7 +117,7 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
  */
 public class ElasticsearchConfigs {
 
-    private static final Logger logger = Logger.getLogger(ElasticsearchConfigs.class);
+    private static final Logger logger = LogManager.getLogger(ElasticsearchConfigs.class);
     private RestHighLevelClient restHighLevelClient;
     private List<Attribute> attributes;
     private String hostname = DEFAULT_HOSTNAME;
