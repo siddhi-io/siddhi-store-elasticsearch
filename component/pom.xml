@@ -287,7 +287,6 @@
                             io.siddhi.core.*;version="${siddhi.version.range}",
                             io.siddhi.annotation.*;version="${siddhi.version.range}",
                             io.siddhi.query.api.*;version="${siddhi.version.range}",
-                            com.fasterxml.jackson.core.*,
                             com.carrotsearch.hppc.*,
                             *;resolution:=optional
                         </Import-Package>
