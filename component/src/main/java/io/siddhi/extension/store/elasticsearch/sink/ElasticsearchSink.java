@@ -183,7 +183,6 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
 public class ElasticsearchSink extends Sink {
 
     private static final Logger logger = LogManager.getLogger(ElasticsearchSink.class);
-
     private ElasticsearchConfigs elasticsearchConfigs;
 
     @Override

@@ -129,7 +129,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                                 Assert.assertEquals(event.getData(), new Object[]{"WSO2", 55.6F, 1005L});
                                 break;
                             default:
-                                Assert.assertSame(1, inEventCount);
+                                Assert.assertEquals(1, inEventCount);
                         }
                     }
                     eventArrived = true;
@@ -208,7 +208,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                                 Assert.assertEquals(event.getData(), new Object[]{"MSFT", 100.6F, 2005L});
                                 break;
                             default:
-                                Assert.assertSame(3, inEventCount);
+                                Assert.assertEquals(3, inEventCount);
                         }
                     }
                     eventArrived = true;
@@ -293,7 +293,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                                 Assert.assertEquals(event.getData(), new Object[]{"MSFT", 100.6F, 2005L});
                                 break;
                             default:
-                                Assert.assertSame(3, inEventCount);
+                                Assert.assertEquals(3, inEventCount);
                         }
                     }
                     eventArrived = true;
@@ -374,7 +374,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                                 Assert.assertEquals(event.getData(), new Object[]{"MSFT", 57.6F, 1005L});
                                 break;
                             default:
-                                Assert.assertSame(2, inEventCount);
+                                Assert.assertEquals(2, inEventCount);
                         }
                     }
                     eventArrived = true;
@@ -453,7 +453,7 @@ public class TestCaseOfElasticsearchEventTableIT {
                                 Assert.assertEquals(event.getData(), new Object[]{"MSFT"});
                                 break;
                             default:
-                                Assert.assertSame(2, inEventCount);
+                                Assert.assertEquals(2, inEventCount);
                         }
                     }
                     eventArrived = true;

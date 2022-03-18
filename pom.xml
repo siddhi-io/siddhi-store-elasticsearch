@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.wso2</groupId>
         <artifactId>wso2</artifactId>
-        <version>5</version>
+        <version>5.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
@@ -70,17 +70,12 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
-                <version>${log4j.api.version}</version>
+                <version>${log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
-                <version>${log4j.core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-to-slf4j</artifactId>
-                <version>${log4j.to.slf4j.version}</version>
+                <version>${log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
@@ -143,6 +138,20 @@
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
             </dependency>
+
+            <!-- Used only for running tests -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.test.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.test.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <scm>
@@ -179,25 +188,24 @@
         </pluginManagement>
     </build>
     <properties>
-        <siddhi.version>5.1.21</siddhi.version>
+        <siddhi.version>5.1.22</siddhi.version>
         <siddhi.version.range>(5.0.0,6.0.0)</siddhi.version.range>
         <testng.version>6.11</testng.version>
-        <elasticsearch.version>7.16.2</elasticsearch.version>
-        <elasticsearch.version.range>[7.16.2,8.0.0)</elasticsearch.version.range>
-        <joda.time.version>2.9.9</joda.time.version>
-        <lucene.core.version>7.2.1</lucene.core.version>
-        <http.asyncc.lient.version>4.1.2</http.asyncc.lient.version>
-        <http.nio.version>4.4.5</http.nio.version>
-        <http.client.version>4.5.2</http.client.version>
+        <elasticsearch.version>7.17.1</elasticsearch.version>
+        <elasticsearch.version.range>[7.0.0,8.0.0)</elasticsearch.version.range>
+        <joda.time.version>2.10.10</joda.time.version>
+        <lucene.core.version>8.11.1</lucene.core.version>
+        <http.asyncc.lient.version>4.1.4</http.asyncc.lient.version>
+        <http.nio.version>4.4.10</http.nio.version>
+        <http.client.version>4.5.10</http.client.version>
         <http.client.version.range>(4.5.2,5.0.0)</http.client.version.range>
-        <http.core.version>4.4.5</http.core.version>
+        <http.core.version>4.4.12</http.core.version>
         <http.core.version.range>(4.4.5,5.0.0)</http.core.version.range>
         <commons.codec.version>1.10</commons.codec.version>
         <commons.logging.version>1.2</commons.logging.version>
         <commons.logging.version.range>(1.2,2)</commons.logging.version.range>
-        <log4j.api.version>2.17.1</log4j.api.version>
-        <log4j.core.version>2.17.1</log4j.core.version>
-        <log4j.to.slf4j.version>2.17.1</log4j.to.slf4j.version>
+        <log4j.version>2.17.1</log4j.version>
+        <log4j.test.version>2.11.1</log4j.test.version>
         <carbon.transport.version>4.4.15</carbon.transport.version>
         <siddhi.map.json.version>5.2.2</siddhi.map.json.version>
         <siddhi.map.xml.version>5.2.2</siddhi.map.xml.version>
