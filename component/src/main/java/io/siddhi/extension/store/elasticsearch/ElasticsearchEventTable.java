@@ -271,7 +271,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     (elasticsearchConfigs.getIndexName() == null || !elasticsearchConfigs.getIndexName().equals(
                             record[elasticsearchConfigs.getPayloadIndexOfIndexName()]))) {
                 elasticsearchConfigs.setIndexName((String) record[elasticsearchConfigs.getPayloadIndexOfIndexName()]);
-                String indexNameInLowerCase = elasticsearchConfigs.getIndexName().toLowerCase(Locale.getDefault());
+                String indexNameInLowerCase = elasticsearchConfigs.getIndexName().toLowerCase(Locale.ROOT);
                 if (!elasticsearchConfigs.getIndexName().equals(indexNameInLowerCase)) {
                     logger.warn("Dynamic Index name : " + elasticsearchConfigs.getIndexName() + " must be in lower " +
                             "case in Siddhi application " + siddhiAppContext.getName() + ", hence changing it to " +
@@ -283,7 +283,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             IndexRequest indexRequest = new IndexRequest(elasticsearchConfigs.getIndexName());
             if (primaryKeys != null && !primaryKeys.isEmpty()) {
                 String docId = ElasticsearchTableUtils.generateRecordIdFromPrimaryKeyValues(elasticsearchConfigs
-                                .getAttributes(), record, primaryKeys);
+                        .getAttributes(), record, primaryKeys);
                 indexRequest.id(docId);
             }
             try {
@@ -368,7 +368,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             for (Map<String, Object> record : deleteConditionParameterMaps) {
                 if (primaryKeys != null && !primaryKeys.isEmpty()) {
                     docId = ElasticsearchTableUtils.generateRecordIdFromPrimaryKeyValues(elasticsearchConfigs
-                                    .getAttributes(), record, primaryKeys);
+                            .getAttributes(), record, primaryKeys);
                 }
                 DeleteRequest deleteRequest = new DeleteRequest(elasticsearchConfigs.getIndexName(),
                         docId != null ? docId : "1");
@@ -400,7 +400,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
             for (Map<String, Object> record : list1) {
                 if (primaryKeys != null && !primaryKeys.isEmpty()) {
                     docId = ElasticsearchTableUtils.generateRecordIdFromPrimaryKeyValues(elasticsearchConfigs
-                                    .getAttributes(), record, primaryKeys);
+                            .getAttributes(), record, primaryKeys);
                 }
                 XContentBuilder builder = XContentFactory.jsonBuilder();
                 builder.startObject();
@@ -545,8 +545,8 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
 
         CreateIndexRequest request = new CreateIndexRequest(elasticsearchConfigs.getIndexName());
         request.settings(Settings.builder()
-                        .put(SETTING_INDEX_NUMBER_OF_SHARDS, elasticsearchConfigs.getNumberOfShards())
-                        .put(SETTING_INDEX_NUMBER_OF_REPLICAS, elasticsearchConfigs.getNumberOfReplicas()));
+                .put(SETTING_INDEX_NUMBER_OF_SHARDS, elasticsearchConfigs.getNumberOfShards())
+                .put(SETTING_INDEX_NUMBER_OF_REPLICAS, elasticsearchConfigs.getNumberOfReplicas()));
         try {
             XContentBuilder builder = XContentFactory.jsonBuilder();
             builder.startObject();

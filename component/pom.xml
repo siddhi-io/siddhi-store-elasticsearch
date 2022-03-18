@@ -56,10 +56,6 @@
             <artifactId>log4j-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-to-slf4j</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
         </dependency>
@@ -106,6 +102,20 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
+        </dependency>
+
+        <!-- Used only for running tests -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.test.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.test.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <profiles>
@@ -274,7 +284,6 @@
                             org.elasticsearch.*,
                             org.apache.http.*,
                             org.apache.lucene.*,
-                            org.apache.logging.log4j.*,
                             org.joda.time.*,
                             com.carrotsearch.hppc.*,
                             org.apache.commons.codec.*,
@@ -288,6 +297,7 @@
                             org.apache.http.*,
                             org.apache.lucene.*,
                             org.joda.time.*,
+                            org.apache.logging.log4j.*,
                             io.siddhi.core.*;version="${siddhi.version.range}",
                             io.siddhi.annotation.*;version="${siddhi.version.range}",
                             io.siddhi.query.api.*;version="${siddhi.version.range}",
