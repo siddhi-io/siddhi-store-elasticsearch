@@ -87,126 +87,126 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_BACKOFF_POLICY;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_BACKOFF_POLICY_CONSTANT_BACKOFF;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_BACKOFF_POLICY_DISABLE;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_BACKOFF_POLICY_EXPONENTIAL_BACKOFF;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_BULK_ACTIONS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_BULK_REQUEST_TIMEOUT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_BULK_SIZE;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_CONCURRENT_REQUESTS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_FLUSH_INTERVAL;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_HOSTNAME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_INDEX_ALIAS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_INDEX_MAX_RETRY_COUNT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_INDEX_NAME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_INDEX_NUMBER_OF_REPLICAS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_INDEX_REQUEST_MASTER_TIMEOUT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_INDEX_REQUEST_TIMEOUT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_INDEX_RETRY_INTERVAL;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_MEMBER_LIST;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_PASSWORD;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_PORT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_SCHEME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_SSL_ENABLED;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_TRUSRTSTORE_PASS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_TRUSRTSTORE_PATH;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_ELEMENT_USER;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .ANNOTATION_TYPE_MAPPINGS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_BACKOFF_POLICY;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_BACKOFF_POLICY_RETRY_NO;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_BACKOFF_POLICY_WAIT_TIME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_BULK_ACTIONS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_BULK_REQUEST_TIMEOUT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_BULK_SIZE_IN_MB;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_CONCURRENT_REQUESTS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_FLUSH_INTERVAL;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_HOSTNAME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_INDEX_REQUEST_MASTER_TIMEOUT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_INDEX_REQUEST_TIMEOUT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_INDEX_RETRY_COUNT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_INDEX_RETRY_INTERVAL;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_IO_THREAD_COUNT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_NUMBER_OF_REPLICAS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_NUMBER_OF_SHARDS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_PASSWORD;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_PORT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_SCHEME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_SSL_ENABLED;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_TRUSTSTORE_PASS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_TRUSTSTORE_TYPE;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .DEFAULT_USER_NAME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .MAPPING_PROPERTIES_ELEMENT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .MAPPING_TYPE_ELEMENT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .SETTING_INDEX_NUMBER_OF_REPLICAS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants
-        .SETTING_INDEX_NUMBER_OF_SHARDS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BACKOFF_POLICY;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BACKOFF_POLICY_CONSTANT_BACKOFF;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BACKOFF_POLICY_DISABLE;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BACKOFF_POLICY_EXPONENTIAL_BACKOFF;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BULK_ACTIONS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BULK_REQUEST_TIMEOUT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_BULK_SIZE;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_CONCURRENT_REQUESTS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_FLUSH_INTERVAL;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_HOSTNAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_INDEX_ALIAS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_INDEX_MAX_RETRY_COUNT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_INDEX_NAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_INDEX_NUMBER_OF_REPLICAS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_INDEX_REQUEST_MASTER_TIMEOUT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_INDEX_REQUEST_TIMEOUT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_INDEX_RETRY_INTERVAL;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_MEMBER_LIST;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_PASSWORD;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_PORT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_SCHEME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_SSL_ENABLED;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_TRUSRTSTORE_PASS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_TRUSRTSTORE_PATH;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_ELEMENT_USER;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        ANNOTATION_TYPE_MAPPINGS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_BACKOFF_POLICY;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_BACKOFF_POLICY_RETRY_NO;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_BACKOFF_POLICY_WAIT_TIME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_BULK_ACTIONS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_BULK_REQUEST_TIMEOUT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_BULK_SIZE_IN_MB;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_CONCURRENT_REQUESTS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_FLUSH_INTERVAL;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_HOSTNAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_INDEX_REQUEST_MASTER_TIMEOUT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_INDEX_REQUEST_TIMEOUT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_INDEX_RETRY_COUNT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_INDEX_RETRY_INTERVAL;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_IO_THREAD_COUNT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_NUMBER_OF_REPLICAS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_NUMBER_OF_SHARDS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_PASSWORD;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_PORT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_SCHEME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_SSL_ENABLED;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_TRUSTSTORE_PASS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_TRUSTSTORE_TYPE;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        DEFAULT_USER_NAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        MAPPING_PROPERTIES_ELEMENT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        MAPPING_TYPE_ELEMENT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        SETTING_INDEX_NUMBER_OF_REPLICAS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
+        SETTING_INDEX_NUMBER_OF_SHARDS;
 
 /**
  * This class contains the Event table implementation for Elasticsearch indexing document as underlying data storage.
