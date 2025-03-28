@@ -1,4 +1,4 @@
-# API Docs - v3.1.2
+# API Docs - v3.1.3-SNAPSHOT
 
 !!! Info "Tested Siddhi Core version: *<a target="_blank" href="http://siddhi.io/en/v5.1/docs/query-guide/">5.1.5</a>*"
     It could also support other Siddhi Core minor versions.
@@ -12,7 +12,7 @@
 <span id="syntax" class="md-typeset" style="display: block; font-weight: bold;">Syntax</span>
 
 ```
-@Store(type="elasticsearch", hostname="<STRING>", port="<INT>", scheme="<STRING>", elasticsearch.member.list="<STRING>", username="<STRING>", password="<STRING>", index.name="<STRING>", payload.index.of.index.name="<INT>", index.alias="<STRING>", index.number.of.shards="<INT>", index.number.of.replicas="<INT>", bulk.actions="<INT>", bulk.size="<LONG>", concurrent.requests="<INT>", flush.interval="<LONG>", backoff.policy.retry.no="<INT>", backoff.policy.wait.time="<LONG>", ssl.enabled="<BOOL>", trust.store.type="<STRING>", trust.store.path="<STRING>", trust.store.pass="<STRING>", backoff.policy="<STRING>", backoff.policy.retry.no="<INT>", backoff.policy.wait.time="<INT>")
+@Store(type="elasticsearch", hostname="<STRING>", port="<INT>", scheme="<STRING>", elasticsearch.member.list="<STRING>", username="<STRING>", password="<STRING>", index.name="<STRING>", payload.index.of.index.name="<INT>", index.alias="<STRING>", index.number.of.shards="<INT>", index.number.of.replicas="<INT>", bulk.actions="<INT>", bulk.size="<LONG>", concurrent.requests="<INT>", flush.interval="<LONG>", backoff.policy.retry.no="<INT>", backoff.policy.wait.time="<LONG>", ssl.enabled="<BOOL>", trust.store.type="<STRING>", trust.store.path="<STRING>", trust.store.pass="<STRING>", backoff.policy="<STRING>", backoff.policy.retry.no="<INT>", backoff.policy.wait.time="<INT>", index.request.timeout="<LONG>", index.request.master.timeout="<LONG>", bulk.request.timeout="<LONG>", index.retry.count="<INT>", index.retry.interval="<LONG>")
 @PrimaryKey("PRIMARY_KEY")
 @Index("INDEX")
 ```
@@ -216,6 +216,46 @@
         <td style="vertical-align: top; word-wrap: break-word"><p style="word-wrap: break-word;margin: 0;">The delay defines how long to wait between retry attempts. Must not be null.</p></td>
         <td style="vertical-align: top">1</td>
         <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">index.request.timeout</td>
+        <td style="vertical-align: top; word-wrap: break-word">Timeout to wait for the all the nodes to acknowledge the index-related operations in seconds.</td>
+        <td style="vertical-align: top">30</td>
+        <td style="vertical-align: top">LONG</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">index.request.master.timeout</td>
+        <td style="vertical-align: top; word-wrap: break-word">Timeout to connect to the master node for index-related operations in seconds.</td>
+        <td style="vertical-align: top">30</td>
+        <td style="vertical-align: top">LONG</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">bulk.request.timeout</td>
+        <td style="vertical-align: top; word-wrap: break-word">Timeout to wait for the bulk request to be performed in seconds.</td>
+        <td style="vertical-align: top">60</td>
+        <td style="vertical-align: top">LONG</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">index.retry.count</td>
+        <td style="vertical-align: top; word-wrap: break-word">Number of retries to perform for failed index-related operations.</td>
+        <td style="vertical-align: top">0</td>
+        <td style="vertical-align: top">INT</td>
+        <td style="vertical-align: top">Yes</td>
+        <td style="vertical-align: top">No</td>
+    </tr>
+    <tr>
+        <td style="vertical-align: top">index.retry.interval</td>
+        <td style="vertical-align: top; word-wrap: break-word">Interval to wait before retry for failed index-related operations in seconds.</td>
+        <td style="vertical-align: top">10</td>
+        <td style="vertical-align: top">LONG</td>
         <td style="vertical-align: top">Yes</td>
         <td style="vertical-align: top">No</td>
     </tr>

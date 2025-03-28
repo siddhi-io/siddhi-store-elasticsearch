@@ -87,89 +87,66 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_BACKOFF_POLICY;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_BACKOFF_POLICY_CONSTANT_BACKOFF;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_BACKOFF_POLICY_DISABLE;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_BACKOFF_POLICY_EXPONENTIAL_BACKOFF;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_BULK_ACTIONS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_BULK_SIZE;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_CONCURRENT_REQUESTS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_FLUSH_INTERVAL;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_HOSTNAME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_INDEX_ALIAS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_INDEX_NAME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_INDEX_NUMBER_OF_REPLICAS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_MEMBER_LIST;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_PASSWORD;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_PORT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_SCHEME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_SSL_ENABLED;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_TRUSRTSTORE_PASS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_TRUSRTSTORE_PATH;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BACKOFF_POLICY;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BACKOFF_POLICY_CONSTANT_BACKOFF;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BACKOFF_POLICY_DISABLE;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BACKOFF_POLICY_EXPONENTIAL_BACKOFF;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BACKOFF_POLICY_RETRY_NO;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BACKOFF_POLICY_WAIT_TIME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BULK_ACTIONS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BULK_REQUEST_TIMEOUT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_BULK_SIZE;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_CLIENT_IO_THREAD_COUNT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_CONCURRENT_REQUESTS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_FLUSH_INTERVAL;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_HOSTNAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_ALIAS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_MAX_RETRY_COUNT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_NAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_NUMBER_OF_REPLICAS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_NUMBER_OF_SHARDS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_REQUEST_MASTER_TIMEOUT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_REQUEST_TIMEOUT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_INDEX_RETRY_INTERVAL;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_MEMBER_LIST;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_PASSWORD;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_PORT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_SCHEME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_SSL_ENABLED;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_TRUSRTSTORE_PASS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_TRUSRTSTORE_PATH;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_TRUSRTSTORE_TYPE;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_ELEMENT_USER;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.ANNOTATION_TYPE_MAPPINGS;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BACKOFF_POLICY;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        DEFAULT_BACKOFF_POLICY_RETRY_NO;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        DEFAULT_BACKOFF_POLICY_WAIT_TIME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BACKOFF_POLICY_RETRY_NO;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BACKOFF_POLICY_WAIT_TIME;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BULK_ACTIONS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BULK_REQUEST_TIMEOUT;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_BULK_SIZE_IN_MB;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        DEFAULT_CONCURRENT_REQUESTS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_CONCURRENT_REQUESTS;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_FLUSH_INTERVAL;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_HOSTNAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_INDEX_REQUEST_MASTER_TIMEOUT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_INDEX_REQUEST_TIMEOUT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_INDEX_RETRY_COUNT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_INDEX_RETRY_INTERVAL;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_IO_THREAD_COUNT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        DEFAULT_NUMBER_OF_REPLICAS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_NUMBER_OF_REPLICAS;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_NUMBER_OF_SHARDS;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_PASSWORD;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_PORT;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_SCHEME;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_SSL_ENABLED;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_TRUSTSTORE_PASS;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_TRUSTSTORE_TYPE;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.DEFAULT_USER_NAME;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        MAPPING_PROPERTIES_ELEMENT;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.MAPPING_PROPERTIES_ELEMENT;
 import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.MAPPING_TYPE_ELEMENT;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        SETTING_INDEX_NUMBER_OF_REPLICAS;
-import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.
-        SETTING_INDEX_NUMBER_OF_SHARDS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.SETTING_INDEX_NUMBER_OF_REPLICAS;
+import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableConstants.SETTING_INDEX_NUMBER_OF_SHARDS;
 
 /**
  * This class contains the Event table implementation for Elasticsearch indexing document as underlying data storage.
@@ -278,7 +255,28 @@ import static io.siddhi.extension.store.elasticsearch.utils.ElasticsearchTableCo
                 @Parameter(name = "backoff.policy.wait.time",
                         description = "The delay defines how long to wait between retry attempts. Must not be null.",
                         type = {DataType.INT}, optional = true,
-                        defaultValue = "1")
+                        defaultValue = "1"),
+                @Parameter(name = "index.request.timeout",
+                        description = "Timeout to wait for the all the nodes to "
+                                + "acknowledge the index-related operations in seconds.",
+                        type = {DataType.LONG}, optional = true,
+                        defaultValue = "30"),
+                @Parameter(name = "index.request.master.timeout",
+                        description = "Timeout to connect to the master node for index-related operations in seconds.",
+                        type = {DataType.LONG}, optional = true,
+                        defaultValue = "30"),
+                @Parameter(name = "bulk.request.timeout",
+                        description = "Timeout to wait for the bulk request to be performed in seconds.",
+                        type = {DataType.LONG}, optional = true,
+                        defaultValue = "60"),
+                @Parameter(name = "index.retry.count",
+                        description = "Number of retries to perform for failed index-related operations.",
+                        type = {DataType.INT}, optional = true,
+                        defaultValue = "0"),
+                @Parameter(name = "index.retry.interval",
+                        description = "Interval to wait before retry for failed index-related operations in seconds.",
+                        type = {DataType.LONG}, optional = true,
+                        defaultValue = "10")
         },
 
         examples = {
@@ -357,6 +355,11 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     private int payloadIndexOfIndexName = DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME;
     private String listOfHostnames;
     private Map<String, String> typeMappings = new HashMap<>();
+    private long indexRequestTimeout = DEFAULT_INDEX_REQUEST_TIMEOUT;
+    private long indexRequestMasterTimeout = DEFAULT_INDEX_REQUEST_MASTER_TIMEOUT;
+    private long bulkRequestTimeout = DEFAULT_BULK_REQUEST_TIMEOUT;
+    private long indexRetryInterval = DEFAULT_INDEX_RETRY_INTERVAL;
+    private int indexRetryCount = DEFAULT_INDEX_RETRY_COUNT;
 
     /**
      * Initializing the Record Table
@@ -537,6 +540,51 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
                     typeMappings.put(element.getKey(), element.getValue());
                 }
             }
+            if (!ElasticsearchTableUtils.isEmpty(
+                    storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_REQUEST_TIMEOUT))) {
+                indexRequestTimeout =
+                        Long.parseLong(storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_REQUEST_TIMEOUT));
+            } else {
+                indexRequestTimeout =
+                        Long.parseLong(configReader.readConfig(ANNOTATION_ELEMENT_INDEX_REQUEST_TIMEOUT,
+                                String.valueOf(indexRequestTimeout)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(
+                    storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_REQUEST_MASTER_TIMEOUT))) {
+                indexRequestMasterTimeout =
+                        Long.parseLong(storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_REQUEST_MASTER_TIMEOUT));
+            } else {
+                indexRequestMasterTimeout =
+                        Long.parseLong(configReader.readConfig(ANNOTATION_ELEMENT_INDEX_REQUEST_MASTER_TIMEOUT,
+                                String.valueOf(indexRequestMasterTimeout)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(
+                    storeAnnotation.getElement(ANNOTATION_ELEMENT_BULK_REQUEST_TIMEOUT))) {
+                bulkRequestTimeout =
+                        Long.parseLong(storeAnnotation.getElement(ANNOTATION_ELEMENT_BULK_REQUEST_TIMEOUT));
+            } else {
+                bulkRequestTimeout =
+                        Long.parseLong(configReader.readConfig(ANNOTATION_ELEMENT_BULK_REQUEST_TIMEOUT,
+                                String.valueOf(bulkRequestTimeout)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(
+                    storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_MAX_RETRY_COUNT))) {
+                indexRetryCount =
+                        Integer.parseInt(storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_MAX_RETRY_COUNT));
+            } else {
+                indexRetryCount =
+                        Integer.parseInt(configReader.readConfig(ANNOTATION_ELEMENT_INDEX_MAX_RETRY_COUNT,
+                                String.valueOf(indexRetryCount)));
+            }
+            if (!ElasticsearchTableUtils.isEmpty(
+                    storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_RETRY_INTERVAL))) {
+                indexRetryInterval =
+                        Long.parseLong(storeAnnotation.getElement(ANNOTATION_ELEMENT_INDEX_RETRY_INTERVAL));
+            } else {
+                indexRetryInterval =
+                        Long.parseLong(configReader.readConfig(ANNOTATION_ELEMENT_INDEX_RETRY_INTERVAL,
+                                String.valueOf(indexRetryInterval)));
+            }
         } else {
             throw new ElasticsearchEventTableException("Elasticsearch Store annotation list null for table id : '" +
                     tableDefinition.getId() + "', required properties cannot be resolved.");
@@ -605,7 +653,7 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         BulkProcessor.Builder bulkProcessorBuilder = BulkProcessor.builder(
                 (request, bulkListener) ->
                         restHighLevelClient.bulkAsync(request, RequestOptions.DEFAULT, bulkListener),
-                new BulkProcessorListener());
+                new BulkProcessorListener(bulkRequestTimeout));
         bulkProcessorBuilder.setBulkActions(bulkActions);
         bulkProcessorBuilder.setBulkSize(new ByteSizeValue(bulkSize, ByteSizeUnit.MB));
         bulkProcessorBuilder.setConcurrentRequests(concurrentRequests);
@@ -623,9 +671,17 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
     }
 
     static class BulkProcessorListener implements BulkProcessor.Listener {
+
+        private final long bulkRequestTimeout;
+
+        private BulkProcessorListener(long bulkRequestTimeout) {
+            this.bulkRequestTimeout = bulkRequestTimeout;
+        }
+
         @Override
         public void beforeBulk(long executionId, BulkRequest request) {
             int numberOfActions = request.numberOfActions();
+            request.timeout(TimeValue.timeValueSeconds(bulkRequestTimeout));
             logger.debug("Executing bulk [{" + executionId + "}] with {" + numberOfActions + "} requests");
         }
 
@@ -937,6 +993,8 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         }
 
         CreateIndexRequest request = new CreateIndexRequest(indexName);
+        request.setTimeout(TimeValue.timeValueSeconds(indexRequestTimeout));
+        request.setMasterTimeout(TimeValue.timeValueSeconds(indexRequestMasterTimeout));
         request.settings(Settings.builder()
                 .put(SETTING_INDEX_NUMBER_OF_SHARDS, numberOfShards)
                 .put(SETTING_INDEX_NUMBER_OF_REPLICAS, numberOfReplicas)
@@ -992,15 +1050,37 @@ public class ElasticsearchEventTable extends AbstractRecordTable {
         if (indexAlias != null) {
             request.alias(new Alias(indexAlias));
         }
-        try {
-            restHighLevelClient.indices().create(request, RequestOptions.DEFAULT);
-            logger.debug("A table id: " + tableDefinition.getId() + " is created with the provided information.");
-        } catch (IOException e) {
-            throw new ElasticsearchEventTableException("Error while creating indices for table id : '" +
-                    tableDefinition.getId(), e);
-        } catch (ElasticsearchStatusException e) {
-            logger.error("Elasticsearch status exception occurred while creating index for table id: " +
-                    tableDefinition.getId(), e);
+        createIndexRequestWithRetry(request);
+    }
+
+    private void createIndexRequestWithRetry(CreateIndexRequest request) {
+        int retryCount = 0;
+        while (retryCount <= indexRetryCount) {
+            try {
+                restHighLevelClient.indices().create(request, RequestOptions.DEFAULT);
+                logger.debug("A table id: " + tableDefinition.getId() + " is created with the provided information.");
+                return;
+            } catch (IOException e) {
+                throw new ElasticsearchEventTableException("Error while creating indices for table id : '"
+                        + tableDefinition.getId(), e);
+            } catch (ElasticsearchStatusException e) {
+                if (retryCount < indexRetryCount) {
+                    retryCount++;
+                    logger.info("Retrying to create index for table id: " + tableDefinition.getId()
+                            + " (Attempt " + retryCount + " of " + indexRetryCount + ")");
+                    try {
+                        Thread.sleep(indexRetryInterval * 1000L);
+                    } catch (InterruptedException interruptedException) {
+                        Thread.currentThread().interrupt();
+                        throw new ElasticsearchEventTableException("Retry process interrupted for table id: '" +
+                                tableDefinition.getId(), interruptedException);
+                    }
+                } else {
+                    logger.error("Elasticsearch status exception occurred while creating index for table id: "
+                            + tableDefinition.getId(), e);
+                    return;
+                }
+            }
         }
     }
 
