@@ -51,6 +51,11 @@ public class ElasticsearchTableConstants {
     public static final String ANNOTATION_ELEMENT_PAYLOAD_INDEX_OF_INDEX_NAME = "payload.index.of.index.name";
     public static final String ANNOTATION_ELEMENT_MEMBER_LIST = "elasticsearch.member.list";
     public static final String ANNOTATION_TYPE_MAPPINGS = "TypeMappings";
+    public static final String ANNOTATION_ELEMENT_INDEX_REQUEST_TIMEOUT = "index.request.timeout";
+    public static final String ANNOTATION_ELEMENT_INDEX_REQUEST_MASTER_TIMEOUT = "index.request.master.timeout";
+    public static final String ANNOTATION_ELEMENT_BULK_REQUEST_TIMEOUT = "bulk.request.timeout";
+    public static final String ANNOTATION_ELEMENT_INDEX_MAX_RETRY_COUNT = "index.retry.count";
+    public static final String ANNOTATION_ELEMENT_INDEX_RETRY_INTERVAL = "index.retry.interval";
 
     public static final String DEFAULT_HOSTNAME = "localhost";
     public static final int DEFAULT_PORT = 9200;
@@ -72,6 +77,11 @@ public class ElasticsearchTableConstants {
     public static final String DEFAULT_TRUSTSTORE_PASS = "wso2carbon";
     public static final String DEFAULT_TRUSTSTORE_TYPE = "jks";
     public static final int DEFAULT_PAYLOAD_INDEX_OF_INDEX_NAME = -1;
+    public static final long DEFAULT_INDEX_REQUEST_TIMEOUT = 30;
+    public static final long DEFAULT_INDEX_REQUEST_MASTER_TIMEOUT = 30;
+    public static final long DEFAULT_BULK_REQUEST_TIMEOUT = 60;
+    public static final int DEFAULT_INDEX_RETRY_COUNT = 0;
+    public static final long DEFAULT_INDEX_RETRY_INTERVAL = 10;
     public static final String SETTING_INDEX_NUMBER_OF_SHARDS = "index.number_of_shards";
     public static final String SETTING_INDEX_NUMBER_OF_REPLICAS = "index.number_of_replicas";
 
